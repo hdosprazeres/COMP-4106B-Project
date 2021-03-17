@@ -1,131 +1,138 @@
 from SimpleGraphics import *
+import sys
+import getopt
+import random
 
-#create the size and background of the playable environment 
-row = 50 #number of blocks wide
-col = 50 #number of blocks long
-blocksize = 10 #how long and wide each block will be
-resize(row*blocksize, col*blocksize)
+rows = 10  # number of blocks wide
+cols = 10  # number of blocks long
+rows_min = 5
+rows_max = 50
+
+opts, args = getopt.getopt(sys.argv, "")
+# print(args)
+# print(len(sys.argv))
+if len(sys.argv) == 2:
+    if int(sys.argv[1]) >= rows_min and int(sys.argv[1]) <= rows_max:
+        rows = int(sys.argv[1])
+        cols = int(sys.argv[1])
+    else:
+        print(f"rows and cols between {rows_min}-{rows_max}")
+if len(sys.argv) == 3:
+    if int(sys.argv[1]) >= rows_min and int(sys.argv[1]) <= rows_max:
+        rows = int(sys.argv[1])
+    if int(sys.argv[2]) >= rows_min and int(sys.argv[2]) <= rows_max:
+        cols = int(sys.argv[2])
+    else:
+        print(f"rows and cols between {rows_max}-{rows_min}")
+# print(rows, cols)
+
+blocksize = 25  # how long and wide each block will be
+resize(rows*blocksize, cols*blocksize)
 background("black")
 setAutoUpdate(False)
 
-#define the initial state of the snake
-snake_body = []
-snakeHead = [25,1] #snake head x locaiton
-snakeTail= [25,0] #snake tail x location
-snake_body.append(snakeHead)
-snake_body.append(snakeTail)
-snake_size = len(snake_body)
-snakeColour = "red" #colour of the snake
-snakeDirection = "down" #current direction of the snake (maybe we can add randomization for initial setting)
-gameover = False
+# variable init
+points = 0
+coin = []
+# new x and y position of head
+new_x = 0
+new_y = 0
+# snake should start in top middle of screen
+snake = [[rows//2, 0]]
+snakeDirection = "down"
+snakeColour = "red"
 
-def main_program():
 
-    while not closed() and not gameover:
+# returns x,y coordinates as two separate lists
+def get_snake_xs_ys():
+    x = y = []
+    for i in range(0, len(snake)):
+        x.append(snake[i][0])
+        y.append(snake[i][1])
+    return x, y
 
-        keys = getHeldKeys()
 
-        #Test for gameover
-        # if gameover:
-        #     print("GAMEOVER!")
-        
-        # snakeDirection = snakeDirection.lower()
-        
-        direction(keys)
+while True:
 
-        clear()
-        draw_snake()
+    # save snake tail incase coin picked up
+    snake_tail = snake[-1]
 
-        update()
-        sleep(0.1)
+    keys = getHeldKeys()
 
-    setColor("white")
-    text(25*blocksize, 25*blocksize,"GAME OVER")   
-
-def direction(keys):
-
-    global snakeDirection
-
-    #Prevents user from going the opposite direction
-    
-    if "w" in keys and snakeDirection != "down":
+    if "w" in keys:
         snakeDirection = "up"
-        # snakeHeady -= 1           #This can act as a small speed boost when pressing the direction key if we ever decide to implement that
-    elif "s" in keys and snakeDirection != "up":
+    elif "s" in keys:
         snakeDirection = "down"
-        # snakeHeady += 1
-    elif "a" in keys and snakeDirection != "right":
+    elif "a" in keys:
         snakeDirection = "left"
-        # snakeHeadx -= 1
-        # gameover = True
-    elif "d" in keys and snakeDirection != "left":
+    elif "d" in keys:
         snakeDirection = "right"
-        # snakeHeadx += 1
 
-    move_snake(snakeDirection)
-    draw_snake()
+    if snakeDirection == "up":
+        new_y = snake[0][1] - 1
+    elif snakeDirection == "down":
+        new_y = snake[0][1] + 1
+    elif snakeDirection == "left":
+        new_x = snake[0][0] - 1
+    elif snakeDirection == "right":
+        new_x = snake[0][0] + 1
 
-def move_snake(dir):
-    global snake_body
+    # check if snake running into self
+    if [new_x, new_y] in snake:
+        print(f"points: {points}")
+        break
 
-    #sets coordinate change to be passed to move_helper function
-    if dir == "up":
-        temp = (0,-1)
-    elif dir == "down":
-        temp = (0,1)
-    elif dir == "left":
-        temp = (-1,0)
-    elif dir == "right":
-        temp = (1,0)
-    
-    snake_body = move_helper(temp)
+    # update snake position
+    snake.insert(0, [new_x, new_y])
+    snake.pop(-1)
 
-    check_boundary()
+    # check if snake out of bounds
+    if snake[0][0] < 0 or snake[0][0] >= cols:
+        print(f"points: {points}")
+        break
+    if snake[0][1] < 0 or snake[0][1] >= rows:
+        print(f"points: {points}")
+        break
 
-#Generates a new body (list of blocks coordinates) for the snake
-def move_helper(tup):
-    x,y  = tup
-    
-    new_body = []
+    # create coin
+    '''
+    PROBLEM WITH COIN CREATION, SOMETIMES
+    File "snake.py", line 115, in <module>
+    coin = [random_x[x], random_y[y]]
+    IndexError: list index out of range
+    '''
+    if coin == []:
+        snake_x, snake_y = get_snake_xs_ys()
+        random_x = [i for i in range(0, cols) if i not in snake_x]
+        random_y = [i for i in range(0, rows) if i not in snake_y]
+        x = random.randint(0, len(random_x))
+        y = random.randint(0, len(random_y))
+        # coin = [random_x[x], random_y[y]]
+        coin = [5, 5]
+        # print(coin)
 
-    #Updates the head according to direction of movement and shifts every block a position towards the head of the snake
-    for i in range(snake_size):
-        if i == 0:
-            Head_x = snake_body[i][0] + x
-            Head_y = snake_body[i][1] + y
-            new_body.append([Head_x,Head_y])
-        else:
-            new_body.append(snake_body[i-1])
+    # check if snake eating coin
+    if snake[0][0] == coin[0] and snake[0][1] == coin[1]:
+        points += 1
+        coin = []
+        snake.append(snake_tail)
 
-    return new_body        
+    clear()
 
-#iterates through snake body and draws rectangles for each of its composing blocks
-def draw_snake():
-    
+    # colour in snake
     setFill(snakeColour)
-    for block in snake_body:
+    for x in range(0, len(snake)):
+        rect(snake[x][0]*blocksize, snake[x][1]
+             * blocksize, blocksize, blocksize)
 
-        rect(block[0]*blocksize, block[1]*blocksize, blocksize, blocksize)
+    # colour in coin
+    if coin != []:
+        setFill("green")
+        rect(coin[0]*blocksize, coin[1]*blocksize, blocksize, blocksize)
 
+    update()
+    sleep(0.15)
 
-def check_boundary():
-    global gameover
-    for block in snake_body:
-        #checks if snake hits walls or itself
-        if (block[0] >= 50 or block[1] >= 50 or block[0] < 0 or block[1] < 0) or check_body():
-            gameover = True
-
-#checks if snake hits itself
-def check_body():
-    
-    for i in range(snake_size):
-
-        temp_body = snake_body[:i] + snake_body[i+1:]
-        temp_body_size = len(temp_body)
-        for j in range(temp_body_size):
-            if (snake_body[i][0] == temp_body[j][0] and snake_body[i][1] == temp_body[j][1]):
-                return True
-    
-    return False
-        
-main_program()
+# write gameover screen
+setOutline("white")
+text((rows/2)*blocksize, (cols/2)*blocksize, f"GAMEOVER\npoints: {points}")
