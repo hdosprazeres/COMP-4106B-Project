@@ -95,24 +95,13 @@ while True:
         break
 
     # create coin
-    '''
-    PROBLEM WITH COIN CREATION, SOMETIMES
-    File "snake.py", line 115, in <module>
-    coin = [random_x[x], random_y[y]]
-    IndexError: list index out of range
-    '''
     if coin == []:
         snake_x, snake_y = get_snake_xs_ys()
-        print("new coin")
         random_x = [i for i in range(0, cols) if i not in snake_x]
         random_y = [i for i in range(0, rows) if i not in snake_y]
         x = random.randint(0, len(random_x)-1)
         y = random.randint(0, len(random_y)-1)
-        print(random_x[x], random_y[y])
         coin = [random_x[x], random_y[y]]
-
-        # coin = [5, 5]
-        print(coin)
 
     # check if snake eating coin
     if snake[0][0] == coin[0] and snake[0][1] == coin[1]:
