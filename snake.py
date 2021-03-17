@@ -44,7 +44,7 @@ snakeColour = "red"
 
 
 # returns x,y coordinates as two separate lists
-def get_snake_xs_ys():
+def get_snake_cords():
     x = y = []
     for i in range(0, len(snake)):
         x.append(snake[i][0])
@@ -56,6 +56,7 @@ while True:
 
     # save snake tail incase coin picked up
     snake_tail = snake[-1]
+    # snake_tail_prev = []
 
     keys = getHeldKeys()
 
@@ -96,7 +97,7 @@ while True:
 
     # create coin
     if coin == []:
-        snake_x, snake_y = get_snake_xs_ys()
+        snake_x, snake_y = get_snake_cords()
         random_x = [i for i in range(0, cols) if i not in snake_x]
         random_y = [i for i in range(0, rows) if i not in snake_y]
         x = random.randint(0, len(random_x)-1)
@@ -109,15 +110,28 @@ while True:
         coin = []
         snake.append(snake_tail)
 
-    clear()
+    # clear()
 
-    # colour in snake
+    # draw snake
     setFill(snakeColour)
-    for x in range(0, len(snake)):
-        rect(snake[x][0]*blocksize, snake[x][1]
-             * blocksize, blocksize, blocksize)
+    # for x in range(0, len(snake)):
+    #     rect(snake[x][0]*blocksize, snake[x][1]
+    #          * blocksize, blocksize, blocksize)
+    rect(snake[0][0]*blocksize, snake[0][1]
+         * blocksize, blocksize, blocksize)
+    setFill("black")
+    rect(snake_tail[0]*blocksize, snake_tail[1]
+         * blocksize, blocksize, blocksize)
+    # if snake_tail != []:
+    #     rect(snake_tail[0] * blocksize, snake_tail[1]
+    #          * blocksize, blocksize, blocksize)
+    # if snake_tail_prev != []:
+    #     rect(snake_tail_prev[0] * blocksize, snake_tail_prev[1]
+    #          * blocksize, blocksize, blocksize)
 
-    # colour in coin
+    # snake_tail_prev = snake_tail
+
+    # draw coin
     if coin != []:
         setFill("green")
         rect(coin[0]*blocksize, coin[1]*blocksize, blocksize, blocksize)
