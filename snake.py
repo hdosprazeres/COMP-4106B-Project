@@ -27,7 +27,6 @@ def game_loop():
     rows = game_data["rows"]
     cols = game_data["cols"]
 
-    game_data["grid"] = [[x for x in range(0, cols)] for y in range(0, rows)]
     game_data["grid"] = create_grid()
 
     sleep_time = 0.15
