@@ -13,7 +13,8 @@ game_data = {
     "snake_direction": "down",
     "block_size": 25,
     "scored_point": False,
-    "grid": [[]]
+    "grid": [[]],
+    "graph": {}
 }
 
 
@@ -28,6 +29,7 @@ def game_loop():
     cols = game_data["cols"]
 
     game_data["grid"] = create_grid()
+    game_data["graph"] = make_graph()
 
     sleep_time = 0.15
     sleep_step = sleep_time / 50
@@ -55,7 +57,7 @@ def game_loop():
 
         check_coin()
         create_coin()
-
+        update_graph()
         # clear()
         draw_snake()
         draw_coin()
@@ -240,6 +242,71 @@ def command_line_input():
         else:
             print(f"rows and cols between {rows_max}-{rows_min}")
 
+def make_graph():
+
+    G = {}
+
+    rows = game_data["rows"]
+    cols = game_data["cols"]
+
+  #Goes through elements in grid making entries in the graph for those that aren't walls.
+  #Each entry includes a list of neighbors that are found using another helper function: neighbors
+    for i in range (0,rows):
+    
+        for j in range (0,cols):
+            G[(i,j)] = [neighbors((i,j)),True]
+    return G
+
+#This method calculates the heuristics for a given location with respect to all goal states in
+#the provided list. It returns the smaller heuristic, that is the one with the smaller estimated distance.
+def heuristics(node_location,coin_location):
+  
+  (x1,y1) = node_location
+  (xn,yn) = coin_location
+
+  return abs(x1-xn)+ abs(y1-yn)
+
+def update_graph():
+    print(game_data["graph"])
+    for node in game_data["snake"]:
+        x,y = node
+        game_data["graph"][(x,y)][1] = False
+
+    xc,yc = game_data["coin"]
+    game_data["graph"][(xc,yc)][1] = False
+
+'''
+This method returns for a given node, all of its valid neighbors.
+The method uses two other helper function that filters out invalid
+nodes (walls and out of boundary locations). 
+'''
+def neighbors (node_location):
+
+  (x,y) = node_location
+
+  neighbors = [(x+1, y), (x-1, y), (x, y-1), (x, y+1)]
+  res = filter_bounds(neighbors)
+  res = filter_wall(res)
+  return res
+
+#This method filters out nodes that are outside the area of the grid (negative coordinates)
+def filter_bounds(nb_list):
+
+  new_list = []
+  for i in range(0,len(nb_list)):
+    (x,y) = nb_list[i]
+    if 0 <= x < game_data["rows"] and 0 <= y < game_data["rows"]:
+      new_list.append(nb_list[i])
+  return new_list
+
+#This method filters out nodes that correspond to walls (marked with 'X')
+def filter_wall(nb_list):
+  new_list = []
+  for i in range(0,len(nb_list)):
+    
+    if nb_list[i] not in game_data["snake"]:
+      new_list.append(nb_list[i])
+  return new_list
 
 command_line_input()
 game_loop()
