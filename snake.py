@@ -57,11 +57,10 @@ def game_loop():
 
         check_coin()
         create_coin()
-        update_graph()
         # clear()
         draw_snake()
         draw_coin()
-
+       
         update()
         sleep(sleep_time)
         # check if scored a point this loop, speed up time
@@ -143,6 +142,9 @@ def update_snake():
     snake = game_data["snake"]
     new_x = snake[0][0]
     new_y = snake[0][1]
+
+    node = (new_x,new_y)
+    xt,yt = game_data["snake_tail"]
     if snake_direction == "up":
         new_y = snake[0][1] - 1
     elif snake_direction == "down":
@@ -153,7 +155,10 @@ def update_snake():
         new_x = snake[0][0] + 1
     # update snake position
     snake.insert(0, [new_x, new_y])
+    game_data["graph"][node][1] = False
+    game_data["graph"][(xt,yt)][1] = True
     snake.pop(-1)
+
 
 
 def create_coin():
@@ -249,31 +254,20 @@ def make_graph():
     rows = game_data["rows"]
     cols = game_data["cols"]
 
-  #Goes through elements in grid making entries in the graph for those that aren't walls.
-  #Each entry includes a list of neighbors that are found using another helper function: neighbors
+
     for i in range (0,rows):
     
         for j in range (0,cols):
             G[(i,j)] = [neighbors((i,j)),True]
     return G
 
-#This method calculates the heuristics for a given location with respect to all goal states in
-#the provided list. It returns the smaller heuristic, that is the one with the smaller estimated distance.
+
 def heuristics(node_location,coin_location):
   
   (x1,y1) = node_location
   (xn,yn) = coin_location
 
   return abs(x1-xn)+ abs(y1-yn)
-
-def update_graph():
-    print(game_data["graph"])
-    for node in game_data["snake"]:
-        x,y = node
-        game_data["graph"][(x,y)][1] = False
-
-    xc,yc = game_data["coin"]
-    game_data["graph"][(xc,yc)][1] = False
 
 '''
 This method returns for a given node, all of its valid neighbors.
@@ -299,7 +293,6 @@ def filter_bounds(nb_list):
       new_list.append(nb_list[i])
   return new_list
 
-#This method filters out nodes that correspond to walls (marked with 'X')
 def filter_wall(nb_list):
   new_list = []
   for i in range(0,len(nb_list)):
