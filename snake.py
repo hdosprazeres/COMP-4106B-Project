@@ -1,7 +1,7 @@
 from SimpleGraphics import *
 import sys
 import random
-
+from queue import PriorityQueue
 
 game_data = {
     "rows": 10,
@@ -42,6 +42,7 @@ def game_loop():
     game_data["snake"][0][0] = game_data["cols"] // 2
 
     while True:
+
         points = game_data["points"]
         # save snake tail incase coin picked up
         game_data["snake_tail"] = game_data["snake"][-1]
@@ -57,10 +58,13 @@ def game_loop():
 
         check_coin()
         create_coin()
+        
+        pathfinding()
+
         # clear()
         draw_snake()
         draw_coin()
-       
+
         update()
         sleep(sleep_time)
         # check if scored a point this loop, speed up time
@@ -264,42 +268,149 @@ def make_graph():
 
 def heuristics(node_location,coin_location):
   
-  (x1,y1) = node_location
-  (xn,yn) = coin_location
+    (x1,y1) = node_location
+    (xn,yn) = coin_location
 
-  return abs(x1-xn)+ abs(y1-yn)
+    return abs(x1-xn)+ abs(y1-yn)
 
-'''
-This method returns for a given node, all of its valid neighbors.
-The method uses two other helper function that filters out invalid
-nodes (walls and out of boundary locations). 
-'''
+
 def neighbors (node_location):
 
-  (x,y) = node_location
+    (x,y) = node_location
 
-  neighbors = [(x+1, y), (x-1, y), (x, y-1), (x, y+1)]
-  res = filter_bounds(neighbors)
-  res = filter_wall(res)
-  return res
+    neighbors = [(x+1, y), (x-1, y), (x, y-1), (x, y+1)]
+    res = filter_bounds(neighbors)
+    res = filter_wall(res)
+    return res
 
-#This method filters out nodes that are outside the area of the grid (negative coordinates)
 def filter_bounds(nb_list):
 
-  new_list = []
-  for i in range(0,len(nb_list)):
-    (x,y) = nb_list[i]
-    if 0 <= x < game_data["rows"] and 0 <= y < game_data["rows"]:
-      new_list.append(nb_list[i])
-  return new_list
+    new_list = []
+    for i in range(0,len(nb_list)):
+        (x,y) = nb_list[i]
+        if 0 <= x < game_data["rows"] and 0 <= y < game_data["rows"]:
+            new_list.append(nb_list[i])
+    return new_list
 
 def filter_wall(nb_list):
-  new_list = []
-  for i in range(0,len(nb_list)):
+    new_list = []
+    for i in range(0,len(nb_list)):
     
-    if nb_list[i] not in game_data["snake"]:
-      new_list.append(nb_list[i])
-  return new_list
+        if nb_list[i] not in game_data["snake"]:
+            new_list.append(nb_list[i])
+    return new_list
+
+def pathfinding():
+
+#Start by defining what is considered a start and goal node
+    x,y = game_data["snake"][0]
+    start_location = (x,y)
+    xg,yg = game_data["coin"]
+    goal_location = (xg,yg)
+
+#Declare a frontier (as priority queue) and an explored list.
+    frontier = PriorityQueue()
+    explored = []
+
+#Define cost_so_far(actual cost), parent node, estimated_cost (heuristics cost) and add it to the frontier.
+    cost_so_far = 0
+    parent = None
+    estimated_cost = heuristics(start_location,goal_location)
+    #frontier.put((estimated_cost,cost_so_far,start_location,parent))
+    frontier.put((estimated_cost,start_location,parent))
+
+  #Iterate through frontier until goal state is found.
+    while not frontier.empty():
+    # print("current frontier is %s"%frontier.queue)
+
+    #get element with highest priority in frontier (lowest cost) and parses its info
+
+        estimated_cost,current_location,current_parent = frontier.get()
+    
+        (x,y) = current_location
+    # print("current loc is %d, %d" %(x,y))
+
+    #Checks whether current location is a goal and returns it if so.
+        if current_location == goal_location:
+            #print("Found goal!")
+            explored.append((current_location,current_parent))
+            break
+    
+    # print("explored now looks like this %s"%explored)
+        #print("current node neighbors is %s"%neighbors(current_location))
+    #Iterate through node's neighbors and perform A* steps
+        for node in neighbors(current_location):
+            xn,yn = node
+      
+      #A* conditional statements
+            if (not in_frontier(node,frontier) and not in_explored(node,explored)) \
+            or (in_frontier(node,frontier) and smaller_cost_frontier(node,frontier,estimated_cost)):
+        
+        #Refresh total costs
+                if [xn,yn] == game_data["coin"]:
+                    estimated_cost  = 0
+                else:
+                    estimated_cost  =  heuristics(node,goal_location)  
+                    #node_cost = current_cost 
+          # print("estimated cost is %d, and current cost is %d" %(estimated_cost,node_cost))
+        
+        #Add value to frontier
+                frontier.put((estimated_cost,node,current_location))
+    
+    # print("is current node %d,%d in explored? %s"%(x,y,in_explored(current_location,explored)))
+    #After exploring the node, add to explored.
+            if not in_explored(current_location,explored):
+                explored.append((current_location,current_parent))
+
+  #Write results to explored list and optimal_path files
+    print(backtracking(current_location,explored))
+
+    #return print("The optimal path cost is %d"%optimal_path_cost)
+
+def in_frontier(node,frontier):
+ 
+    return any(node in item for item in frontier.queue)
+
+def in_explored(node,explored_list):
+  
+    for item in explored_list:
+
+        if node == item[0]:
+            return True
+    return False
+
+def smaller_cost_frontier(node,frontier,cost):
+
+    if in_frontier(node,frontier):
+
+        for item in frontier.queue:
+
+            if item[1] == node and cost < item[0]:
+
+                return True
+
+        return False
+
+def backtracking(goal_node,explored_list):
+
+    path = []
+    node = goal_node
+    completed = False
+    while completed != True:
+        for item in explored_list:
+
+        #Return when a node found has no parent, as it corresponds to the start state.
+            if item[0] == node and item[1] == None:
+                path.append(item[0])
+                completed = True
+                break
+            #When node found has a parent, add to path and continue backtracking
+            elif item[0] == node:
+                # print("found a node %s . Append it and look for its parent %s"%(item[0],item[1]))
+                path.append(item[0])
+                node = item[1]
+
+    return path
 
 command_line_input()
 game_loop()
