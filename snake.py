@@ -14,7 +14,8 @@ game_data = {
     "block_size": 25,
     "scored_point": False,
     "grid": [[]],
-    "graph": {}
+    "graph": {},
+    "path": []
 }
 
 
@@ -49,18 +50,16 @@ def game_loop():
 
         # a* search can sit here making decisions about the next move
 
-        keys = getHeldKeys()
-        change_snake_direction(keys)
-        update_snake()
         # check if snake dead, break loop
         if is_snake_dead():
             break
 
         check_coin()
         create_coin()
-        
-        pathfinding()
+        if not game_data["path"]:
+            pathfinding()
 
+        update_snake_ai()
         # clear()
         draw_snake()
         draw_coin()
@@ -163,8 +162,27 @@ def update_snake():
     game_data["graph"][(xt,yt)][1] = True
     snake.pop(-1)
 
+def update_snake_ai():
+    '''
+    based on snake direction pick where new head will be
+    update snake by simply adding new head and popping tail
+    '''
+    snake = game_data["snake"]
+    path = game_data["path"]
+    new_x = game_data["path"][0][0]
+    new_y = game_data["path"][0][1]
+    node = (new_x,new_y)
+    node = (new_x,new_y)
+    xt,yt = game_data["snake_tail"]
+    # update snake position
+    snake.insert(0, [new_x, new_y])
+    game_data["graph"][node][1] = False
+    game_data["graph"][(xt,yt)][1] = True
+    snake.pop(-1)
+    game_data["path"].pop(0)
 
-
+    graph = game_data["graph"]
+    
 def create_coin():
     '''
     create a coin at any coordinate on the grid
@@ -301,7 +319,8 @@ def filter_wall(nb_list):
     return new_list
 
 def pathfinding():
-
+    found = False
+    graph = game_data["graph"]
 #Start by defining what is considered a start and goal node
     x,y = game_data["snake"][0]
     start_location = (x,y)
@@ -332,6 +351,7 @@ def pathfinding():
 
     #Checks whether current location is a goal and returns it if so.
         if current_location == goal_location:
+            found = True
             #print("Found goal!")
             explored.append((current_location,current_parent))
             break
@@ -341,7 +361,8 @@ def pathfinding():
     #Iterate through node's neighbors and perform A* steps
         for node in neighbors(current_location):
             xn,yn = node
-      
+            if graph[(xn,yn)][1] == False:
+                continue
       #A* conditional statements
             if (not in_frontier(node,frontier) and not in_explored(node,explored)) \
             or (in_frontier(node,frontier) and smaller_cost_frontier(node,frontier,estimated_cost)):
@@ -363,9 +384,10 @@ def pathfinding():
                 explored.append((current_location,current_parent))
 
   #Write results to explored list and optimal_path files
-    print(backtracking(current_location,explored))
-
-    #return print("The optimal path cost is %d"%optimal_path_cost)
+    path = backtracking(current_location,explored)
+    final_path = path[::-1]
+    game_data["path"] = final_path[1:]
+    return found
 
 def in_frontier(node,frontier):
  
