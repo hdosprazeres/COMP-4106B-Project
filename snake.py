@@ -41,25 +41,34 @@ def game_loop():
 
     # put snake head in correct place
     game_data["snake"][0][0] = game_data["cols"] // 2
+    create_coin()
 
     while True:
 
+        print(game_data["snake"])
         points = game_data["points"]
         # save snake tail incase coin picked up
         game_data["snake_tail"] = game_data["snake"][-1]
 
         # a* search can sit here making decisions about the next move
+        if not game_data["path"]:
+            pathfinding()
 
+        update_snake_ai()
+        # keys = getHeldKeys()
+        # change_snake_direction(keys)
+        # update_snake()
         # check if snake dead, break loop
         if is_snake_dead():
             break
 
         check_coin()
         create_coin()
-        if not game_data["path"]:
-            pathfinding()
+        # if not game_data["path"]:
+        #     pathfinding()
 
-        update_snake_ai()
+        # update_snake_ai()
+
         # clear()
         draw_snake()
         draw_coin()
@@ -95,6 +104,7 @@ def is_snake_dead():
     checks if snake as moved into itself
     or if snake as moved out of bounds
     '''
+    print("is_snake_dead()")
     snake = game_data["snake"]
     # check if snake running into self
     if snake[0] in snake[1:]:
@@ -146,8 +156,8 @@ def update_snake():
     new_x = snake[0][0]
     new_y = snake[0][1]
 
-    node = (new_x,new_y)
-    xt,yt = game_data["snake_tail"]
+    node = (new_x, new_y)
+    xt, yt = game_data["snake_tail"]
     if snake_direction == "up":
         new_y = snake[0][1] - 1
     elif snake_direction == "down":
@@ -159,30 +169,32 @@ def update_snake():
     # update snake position
     snake.insert(0, [new_x, new_y])
     game_data["graph"][node][1] = False
-    game_data["graph"][(xt,yt)][1] = True
+    game_data["graph"][(xt, yt)][1] = True
     snake.pop(-1)
+
 
 def update_snake_ai():
     '''
     based on snake direction pick where new head will be
     update snake by simply adding new head and popping tail
     '''
+    print("update_snake_ai()")
     snake = game_data["snake"]
     path = game_data["path"]
     new_x = game_data["path"][0][0]
     new_y = game_data["path"][0][1]
-    node = (new_x,new_y)
-    node = (new_x,new_y)
-    xt,yt = game_data["snake_tail"]
+    node = (new_x, new_y)
+    xt, yt = game_data["snake_tail"]
     # update snake position
     snake.insert(0, [new_x, new_y])
     game_data["graph"][node][1] = False
-    game_data["graph"][(xt,yt)][1] = True
+    game_data["graph"][(xt, yt)][1] = True
     snake.pop(-1)
     game_data["path"].pop(0)
 
     graph = game_data["graph"]
-    
+
+
 def create_coin():
     '''
     create a coin at any coordinate on the grid
@@ -269,6 +281,7 @@ def command_line_input():
         else:
             print(f"rows and cols between {rows_max}-{rows_min}")
 
+
 def make_graph():
 
     G = {}
@@ -276,134 +289,140 @@ def make_graph():
     rows = game_data["rows"]
     cols = game_data["cols"]
 
+    for i in range(0, rows):
 
-    for i in range (0,rows):
-    
-        for j in range (0,cols):
-            G[(i,j)] = [neighbors((i,j)),True]
+        for j in range(0, cols):
+            G[(i, j)] = [neighbors((i, j)), True]
     return G
 
 
-def heuristics(node_location,coin_location):
-  
-    (x1,y1) = node_location
-    (xn,yn) = coin_location
+def heuristics(node_location, coin_location):
 
-    return abs(x1-xn)+ abs(y1-yn)
+    (x1, y1) = node_location
+    (xn, yn) = coin_location
+
+    return abs(x1-xn) + abs(y1-yn)
 
 
-def neighbors (node_location):
+def neighbors(node_location):
 
-    (x,y) = node_location
+    (x, y) = node_location
 
     neighbors = [(x+1, y), (x-1, y), (x, y-1), (x, y+1)]
     res = filter_bounds(neighbors)
     res = filter_wall(res)
     return res
 
+
 def filter_bounds(nb_list):
 
     new_list = []
-    for i in range(0,len(nb_list)):
-        (x,y) = nb_list[i]
+    for i in range(0, len(nb_list)):
+        (x, y) = nb_list[i]
         if 0 <= x < game_data["rows"] and 0 <= y < game_data["rows"]:
             new_list.append(nb_list[i])
     return new_list
 
+
 def filter_wall(nb_list):
     new_list = []
-    for i in range(0,len(nb_list)):
-    
+    for i in range(0, len(nb_list)):
+
         if nb_list[i] not in game_data["snake"]:
             new_list.append(nb_list[i])
     return new_list
 
+
 def pathfinding():
+    print("pathfinding()")
     found = False
     graph = game_data["graph"]
-#Start by defining what is considered a start and goal node
-    x,y = game_data["snake"][0]
-    start_location = (x,y)
-    xg,yg = game_data["coin"]
-    goal_location = (xg,yg)
+# Start by defining what is considered a start and goal node
+    x, y = game_data["snake"][0]
+    start_location = (x, y)
+    xg, yg = game_data["coin"]
+    goal_location = (xg, yg)
 
-#Declare a frontier (as priority queue) and an explored list.
+# Declare a frontier (as priority queue) and an explored list.
     frontier = PriorityQueue()
     explored = []
 
-#Define cost_so_far(actual cost), parent node, estimated_cost (heuristics cost) and add it to the frontier.
+# Define cost_so_far(actual cost), parent node, estimated_cost (heuristics cost) and add it to the frontier.
     cost_so_far = 0
     parent = None
-    estimated_cost = heuristics(start_location,goal_location)
-    #frontier.put((estimated_cost,cost_so_far,start_location,parent))
-    frontier.put((estimated_cost,start_location,parent))
+    estimated_cost = heuristics(start_location, goal_location)
+    # frontier.put((estimated_cost,cost_so_far,start_location,parent))
+    frontier.put((estimated_cost, start_location, parent))
 
-  #Iterate through frontier until goal state is found.
+  # Iterate through frontier until goal state is found.
     while not frontier.empty():
-    # print("current frontier is %s"%frontier.queue)
+        # print("current frontier is %s"%frontier.queue)
 
-    #get element with highest priority in frontier (lowest cost) and parses its info
+        # get element with highest priority in frontier (lowest cost) and parses its info
 
-        estimated_cost,current_location,current_parent = frontier.get()
-    
-        (x,y) = current_location
+        estimated_cost, current_location, current_parent = frontier.get()
+
+        (x, y) = current_location
     # print("current loc is %d, %d" %(x,y))
 
-    #Checks whether current location is a goal and returns it if so.
+    # Checks whether current location is a goal and returns it if so.
         if current_location == goal_location:
             found = True
             #print("Found goal!")
-            explored.append((current_location,current_parent))
+            explored.append((current_location, current_parent))
             break
-    
+
     # print("explored now looks like this %s"%explored)
         #print("current node neighbors is %s"%neighbors(current_location))
-    #Iterate through node's neighbors and perform A* steps
+    # Iterate through node's neighbors and perform A* steps
         for node in neighbors(current_location):
-            xn,yn = node
-            if graph[(xn,yn)][1] == False:
+            xn, yn = node
+            if graph[(xn, yn)][1] == False:
                 continue
-      #A* conditional statements
-            if (not in_frontier(node,frontier) and not in_explored(node,explored)) \
-            or (in_frontier(node,frontier) and smaller_cost_frontier(node,frontier,estimated_cost)):
-        
-        #Refresh total costs
-                if [xn,yn] == game_data["coin"]:
-                    estimated_cost  = 0
-                else:
-                    estimated_cost  =  heuristics(node,goal_location)  
-                    #node_cost = current_cost 
-          # print("estimated cost is %d, and current cost is %d" %(estimated_cost,node_cost))
-        
-        #Add value to frontier
-                frontier.put((estimated_cost,node,current_location))
-    
-    # print("is current node %d,%d in explored? %s"%(x,y,in_explored(current_location,explored)))
-    #After exploring the node, add to explored.
-            if not in_explored(current_location,explored):
-                explored.append((current_location,current_parent))
+      # A* conditional statements
+            if (not in_frontier(node, frontier) and not in_explored(node, explored)) \
+                    or (in_frontier(node, frontier) and smaller_cost_frontier(node, frontier, estimated_cost)):
 
-  #Write results to explored list and optimal_path files
-    path = backtracking(current_location,explored)
+                # Refresh total costs
+                if [xn, yn] == game_data["coin"]:
+                    estimated_cost = 0
+                else:
+                    estimated_cost = heuristics(node, goal_location)
+                    #node_cost = current_cost
+          # print("estimated cost is %d, and current cost is %d" %(estimated_cost,node_cost))
+
+        # Add value to frontier
+                frontier.put((estimated_cost, node, current_location))
+
+    # print("is current node %d,%d in explored? %s"%(x,y,in_explored(current_location,explored)))
+    # After exploring the node, add to explored.
+            if not in_explored(current_location, explored):
+                explored.append((current_location, current_parent))
+
+  # Write results to explored list and optimal_path files
+    path = backtracking(current_location, explored)
     final_path = path[::-1]
     game_data["path"] = final_path[1:]
     return found
 
-def in_frontier(node,frontier):
- 
+
+def in_frontier(node, frontier):
+
     return any(node in item for item in frontier.queue)
 
-def in_explored(node,explored_list):
-  
+
+def in_explored(node, explored_list):
+
     for item in explored_list:
 
         if node == item[0]:
             return True
     return False
 
-def smaller_cost_frontier(node,frontier,cost):
 
-    if in_frontier(node,frontier):
+def smaller_cost_frontier(node, frontier, cost):
+
+    if in_frontier(node, frontier):
 
         for item in frontier.queue:
 
@@ -413,7 +432,8 @@ def smaller_cost_frontier(node,frontier,cost):
 
         return False
 
-def backtracking(goal_node,explored_list):
+
+def backtracking(goal_node, explored_list):
 
     path = []
     node = goal_node
@@ -421,18 +441,19 @@ def backtracking(goal_node,explored_list):
     while completed != True:
         for item in explored_list:
 
-        #Return when a node found has no parent, as it corresponds to the start state.
+            # Return when a node found has no parent, as it corresponds to the start state.
             if item[0] == node and item[1] == None:
                 path.append(item[0])
                 completed = True
                 break
-            #When node found has a parent, add to path and continue backtracking
+            # When node found has a parent, add to path and continue backtracking
             elif item[0] == node:
                 # print("found a node %s . Append it and look for its parent %s"%(item[0],item[1]))
                 path.append(item[0])
                 node = item[1]
 
     return path
+
 
 command_line_input()
 game_loop()
