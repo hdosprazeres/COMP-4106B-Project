@@ -54,13 +54,15 @@ def game_loop():
         if not game_data["path"]:
             pathfinding()
 
+        # check if snake dead, break loop
+        if is_snake_dead():
+            print("Snake is dead!")
+            break
+
         update_snake_ai()
         # keys = getHeldKeys()
         # change_snake_direction(keys)
         # update_snake()
-        # check if snake dead, break loop
-        if is_snake_dead():
-            break
 
         check_coin()
         create_coin()
@@ -393,16 +395,21 @@ def pathfinding():
 
         # Add value to frontier
                 frontier.put((estimated_cost, node, current_location))
-
+ 
     # print("is current node %d,%d in explored? %s"%(x,y,in_explored(current_location,explored)))
     # After exploring the node, add to explored.
             if not in_explored(current_location, explored):
                 explored.append((current_location, current_parent))
+        
+        # print("after iterate through node neighbours")
 
   # Write results to explored list and optimal_path files
+    # print("before backtracking")
     path = backtracking(current_location, explored)
+    # print("after backtracking")
     final_path = path[::-1]
     game_data["path"] = final_path[1:]
+    # print("pathfinding end")
     return found
 
 
@@ -434,20 +441,29 @@ def smaller_cost_frontier(node, frontier, cost):
 
 
 def backtracking(goal_node, explored_list):
-
+    # print("backtracking()")
     path = []
     node = goal_node
     completed = False
+    # print("explored_list: {}".format(explored_list))
     while completed != True:
-        for item in explored_list:
+        #explored list returns 0 or 1 elements when the snake dies
+        if len(explored_list) <= 1:
+            path.append(node)   #band aid fix, technically shouldn't be returning the goal node as path
+            break
 
+        # print("in while")
+        for item in explored_list:
+            # print("in for")
             # Return when a node found has no parent, as it corresponds to the start state.
             if item[0] == node and item[1] == None:
+                # print("in if")
                 path.append(item[0])
                 completed = True
                 break
             # When node found has a parent, add to path and continue backtracking
             elif item[0] == node:
+                # print("in else")
                 # print("found a node %s . Append it and look for its parent %s"%(item[0],item[1]))
                 path.append(item[0])
                 node = item[1]
