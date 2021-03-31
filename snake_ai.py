@@ -6,7 +6,7 @@ def update_snake_ai():
     based on snake direction pick where new head will be
     update snake by simply adding new head and popping tail
     '''
-    print("update_snake_ai()")
+    #print("update_snake_ai()")
     snake = game_data["snake"]
     path = game_data["path"]
     new_x = game_data["path"][0][0]
@@ -175,7 +175,6 @@ def pathfinding():
         # get element with highest priority in frontier (lowest cost) and parses its info
 
         estimated_cost,current_cost, current_location, current_parent = frontier.get()
-
         (x, y) = current_location
 
         # Checks whether current location is a goal and returns it if so.
@@ -196,10 +195,10 @@ def pathfinding():
                 # Refresh total costs
                 if [xn, yn] == game_data["coin"]:
                     estimated_cost = 0
+                    node_cost = 0
                 else:
                     estimated_cost = current_cost + float(graph[(xn,yn)][2]) + heuristics(node, goal_location)
                     node_cost = current_cost + float(graph[(xn,yn)][2])
-
             # Add value to frontier
                 frontier.put((estimated_cost,node_cost, node, current_location))
  

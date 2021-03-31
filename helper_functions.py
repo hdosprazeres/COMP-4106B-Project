@@ -21,7 +21,7 @@ def is_snake_dead():
     checks if snake as moved into itself
     or if snake as moved out of bounds
     '''
-    print("is_snake_dead()")
+    #print("is_snake_dead()")
     snake = game_data["snake"]
     # check if snake running into self
     if snake[0] in snake[1:] or not game_data["path"]:

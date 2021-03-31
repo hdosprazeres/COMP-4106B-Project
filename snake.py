@@ -30,7 +30,7 @@ def game_loop():
 
     while True:
 
-        print(game_data["snake"])
+        #print(game_data["snake"])
         points = game_data["points"]
         # save snake tail incase coin picked up
         game_data["snake_tail"] = game_data["snake"][-1]
