@@ -1,6 +1,6 @@
 from game_data import *
 from queue import PriorityQueue
-
+from math import *
 def update_snake_ai():
     '''
     based on snake direction pick where new head will be
@@ -36,7 +36,7 @@ def make_graph():
     for i in range(0, rows):
 
         for j in range(0, cols):
-            G[(i, j)] = [neighbors((i, j)), True]
+            G[(i, j)] = [neighbors((i, j)), True,game_data["default_cost"]]
     return G
 
 
@@ -44,11 +44,68 @@ def heuristics(node_location, coin_location):
     '''
     this function implements the manhattan distance heuristic
     '''
+    
     (x1, y1) = node_location
     (xn, yn) = coin_location
 
     return abs(x1-xn) + abs(y1-yn)
 
+def update_actual_cost():
+    '''
+    this function updates the actual cost of graph nodes
+    '''
+    radial_distance()
+    wall_proximity()
+    body_proximity()
+
+def radial_distance():
+    distance_factor = int(game_data["rows"]*game_data["cols"]/10)
+    xc = game_data["coin"][0]
+    yc = game_data["coin"][1]
+    for i in range(-distance_factor,distance_factor):
+        x = xc + i
+        for j in range(-distance_factor,distance_factor):
+            y = yc + j
+
+            if 0 <= x < game_data["rows"] and 0 <= y < game_data["cols"]:
+                game_data["graph"][(x,y)][2] = game_data["graph"][(x,y)][2] - sqrt((xc-x)**2+(yc-y)**2)
+
+def wall_proximity():
+    distance_factor = 2
+    discount_factor = 3
+    rows = game_data["rows"]
+    cols = game_data["cols"]
+
+    for node in game_data["snake"]:
+        x,y = node
+
+        if (x - distance_factor) < 0 or (x+distance_factor) > rows or (y-distance_factor) < 0 or (y+distance_factor) > cols:
+            
+            game_data["graph"][(x,y)][2] = game_data["graph"][(x,y)][2] - discount_factor
+    
+def body_proximity():
+    distance_factor = 2
+    discount_factor = 3
+    snake = game_data["snake"]
+    for i in range(len(snake)):
+    
+        x,y = snake[i]
+        
+        for z in range(-distance_factor,distance_factor):
+            xtemp = x + z
+            for j in range(-distance_factor,distance_factor):
+                ytemp = y + j
+
+                if 0 <= xtemp < game_data["rows"] and 0 <= ytemp < game_data["cols"] and game_data["graph"][(xtemp,ytemp)][1] == True:
+                    game_data["graph"][(xtemp,ytemp)][2] = game_data["graph"][(xtemp,ytemp)][1] - discount_factor
+
+def reset_cost():
+
+    for i in range(0, game_data["rows"]):
+
+        for j in range(0, game_data["cols"]):
+            game_data["graph"][(i, j)][2] = game_data["default_cost"]
+    
 
 def neighbors(node_location):
     '''
@@ -92,6 +149,7 @@ def pathfinding():
     found = False
     graph = game_data["graph"]
 
+
     # Start by defining what is considered a start node (snake's head) and goal node (coin location)
     x, y = game_data["snake"][0]
     start_location = (x, y)
@@ -103,19 +161,20 @@ def pathfinding():
     explored = []
 
     # Define cost_so_far(actual cost), parent node, estimated_cost (heuristics cost) and add it to the frontier.
+    update_actual_cost()
     cost_so_far = 0
     parent = None
     estimated_cost = heuristics(start_location, goal_location)
 
     # frontier.put((estimated_cost,cost_so_far,start_location,parent))
-    frontier.put((estimated_cost, start_location, parent))
+    frontier.put((estimated_cost,cost_so_far, start_location, parent))
 
     # Iterate through frontier until goal state is found.
     while not frontier.empty():
 
         # get element with highest priority in frontier (lowest cost) and parses its info
 
-        estimated_cost, current_location, current_parent = frontier.get()
+        estimated_cost,current_cost, current_location, current_parent = frontier.get()
 
         (x, y) = current_location
 
@@ -138,11 +197,11 @@ def pathfinding():
                 if [xn, yn] == game_data["coin"]:
                     estimated_cost = 0
                 else:
-                    estimated_cost = heuristics(node, goal_location)
-                    #node_cost = current_cost
+                    estimated_cost = current_cost + float(graph[(xn,yn)][2]) + heuristics(node, goal_location)
+                    node_cost = current_cost + float(graph[(xn,yn)][2])
 
             # Add value to frontier
-                frontier.put((estimated_cost, node, current_location))
+                frontier.put((estimated_cost,node_cost, node, current_location))
  
     # After exploring the node, add to explored.
             if not in_explored(current_location, explored):

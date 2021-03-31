@@ -17,7 +17,7 @@ def game_loop():
     game_data["grid"] = create_grid()
     game_data["graph"] = make_graph()
 
-    sleep_time = 0.02
+    sleep_time = 0.05
     sleep_step = sleep_time / 50
 
     resize(rows*blocksize, cols*blocksize)
@@ -51,7 +51,7 @@ def game_loop():
 
         draw_snake()
         draw_coin()
-
+        
         update()
         sleep(sleep_time)
         # check if scored a point this loop, speed up time

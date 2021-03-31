@@ -10,5 +10,6 @@ game_data = {
     "scored_point": False,
     "grid": [[]],
     "graph": {},
-    "path": []
+    "path": [],
+    "default_cost":10
 }
