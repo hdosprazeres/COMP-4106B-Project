@@ -56,7 +56,7 @@ def update_actual_cost():
     '''
     radial_distance()
     wall_proximity()
-    body_proximity()
+    # body_proximity()
 
 def radial_distance():
     distance_factor = int(game_data["rows"]*game_data["cols"]/10)
@@ -87,6 +87,7 @@ def body_proximity():
     distance_factor = 2
     discount_factor = 3
     snake = game_data["snake"]
+    head = snake[0]
     for i in range(len(snake)):
     
         x,y = snake[i]
@@ -97,7 +98,7 @@ def body_proximity():
                 ytemp = y + j
 
                 if 0 <= xtemp < game_data["rows"] and 0 <= ytemp < game_data["cols"] and game_data["graph"][(xtemp,ytemp)][1] == True:
-                    game_data["graph"][(xtemp,ytemp)][2] = game_data["graph"][(xtemp,ytemp)][1] - discount_factor
+                    game_data["graph"][(xtemp,ytemp)][2] = game_data["graph"][(xtemp,ytemp)][1] - discount_factor +20*(abs(xtemp-head[0])+abs(ytemp-head[1]))
 
 def reset_cost():
 
@@ -145,7 +146,6 @@ def filter_wall(nb_list):
 
 def pathfinding():
 
-    print("pathfinding()")
     found = False
     graph = game_data["graph"]
 
@@ -199,6 +199,7 @@ def pathfinding():
                 else:
                     estimated_cost = current_cost + float(graph[(xn,yn)][2]) + heuristics(node, goal_location)
                     node_cost = current_cost + float(graph[(xn,yn)][2])
+                print(node_cost)
             # Add value to frontier
                 frontier.put((estimated_cost,node_cost, node, current_location))
  
@@ -272,5 +273,4 @@ def backtracking(goal_node, explored_list):
                 # print("found a node %s . Append it and look for its parent %s"%(item[0],item[1]))
                 path.append(item[0])
                 node = item[1]
-
     return path
