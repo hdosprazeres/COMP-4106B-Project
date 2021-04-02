@@ -83,8 +83,8 @@ except:
   exit("SimpleGraphics failed to import the required Tk Interface font library.")
 
 # Tcl/Tk master window and canvas
-__master = None
-__canvas = None
+master = None
+canvas = None
 
 # Maintain a list of image references so that images don't appear when 
 # functions end
@@ -124,28 +124,28 @@ __bgcolor = "#d0d0d0"
 #  that it stays up to date.  Setup the handlers needed for keyboard and 
 #  mouse input.
 def __init():
-  global __canvas
-  global __master
+  global canvas
+  global master
   global __background
 
   # Create the window
-  __master = tk.Tk()
-  __master.protocol("WM_DELETE_WINDOW", __closeClicked)
-  __canvas = tk.Canvas(__master, width=800, height=600)
-  __canvas.pack()
+  master = tk.Tk()
+  master.protocol("WM_DELETE_WINDOW", __closeClicked)
+  canvas = tk.Canvas(master, width=800, height=600)
+  canvas.pack()
 
   # Setup handlers for mouse and keyboard input
-  #__master.bind("<KeyRelease-Control_R>", ctrl_r_release)
-  __master.bind("<Escape>", __closeClicked)
-  __master.bind("<Key>", __key)
-  __master.bind("<KeyRelease>", __keyRelease)
-  __master.bind("<Button-1>", __button1pressed)
-  __master.bind("<ButtonRelease-1>", __button1released)
-  __master.bind("<Button-2>", __button2pressed)
-  __master.bind("<ButtonRelease-2>", __button2released)
-  __master.bind("<Button-3>", __button3pressed)
-  __master.bind("<ButtonRelease-3>", __button3released)
-  __master.bind("<FocusOut>", __focusOut)
+  #master.bind("<KeyRelease-Control_R>", ctrl_r_release)
+  master.bind("<Escape>", __closeClicked)
+  master.bind("<Key>", __key)
+  master.bind("<KeyRelease>", __keyRelease)
+  master.bind("<Button-1>", __button1pressed)
+  master.bind("<ButtonRelease-1>", __button1released)
+  master.bind("<Button-2>", __button2pressed)
+  master.bind("<ButtonRelease-2>", __button2released)
+  master.bind("<Button-3>", __button3pressed)
+  master.bind("<ButtonRelease-3>", __button3released)
+  master.bind("<FocusOut>", __focusOut)
 
   # Ensure that mainloop is called before the program exits 
   register(__shutdown)
@@ -157,11 +157,11 @@ def __init():
   # that we cannot simply change the background color of the canvas because
   # the background of the canvas is not saved when saving the canvas to a 
   # file.
-  __background = __canvas.create_rectangle(0, 0, getWidth()+1, getHeight()+1, fill=__bgcolor, outline=__bgcolor, tag="__background")
+  __background = canvas.create_rectangle(0, 0, getWidth()+1, getHeight()+1, fill=__bgcolor, outline=__bgcolor, tag="__background")
 
   # Ensure that the graphics window displays promptly
   update()
-  __master.focus_set()
+  master.focus_set()
 
 def ctrl_r_release(event):
   print("Right control released")
@@ -283,14 +283,14 @@ def __keyRelease(event):
 #  @param event the event object (if any) passed when the handler was invoked
 def __closeClicked(event = None):
   global __closePressed
-  global __canvas
-  global __master
+  global canvas
+  global master
 
   __closePressed = True
   try:
-    __canvas = None
-    __master.destroy()
-    __master = None
+    canvas = None
+    master.destroy()
+    master = None
     unregister(__shutdown)
   finally:
     pass;
@@ -298,14 +298,14 @@ def __closeClicked(event = None):
 # Close the window
 def close():
   global __closePressed
-  global __canvas
-  global __master
+  global canvas
+  global master
 
   __closePressed = True
   try:
-    __canvas = None
-    __master.destroy()
-    __master = None
+    canvas = None
+    master.destroy()
+    master = None
     unregister(__shutdown)
   except:
     try:
@@ -316,22 +316,22 @@ def close():
 # Set the window title
 # @param t the new title for the window
 def setWindowTitle(t):
-  global __master
-  __master.wm_title(t)
+  global master
+  master.wm_title(t)
 
 
 ## Update the canvas if the programmer has automatic updates turned on
 def __update():
   try:
-    if __canvas != None and __autoupdate:
-      __canvas.update()
+    if canvas != None and __autoupdate:
+      canvas.update()
   finally:
     pass;
 
 ## Force the canvas to update 
 def update():
-  if __canvas != None:
-    __canvas.update()
+  if canvas != None:
+    canvas.update()
 
 ## Return all of the input typed by the user, removing it from the input buffer
 def getTyped():
@@ -462,7 +462,7 @@ def readLine():
 #  @return True if the close button has been clicked, False otherwise.
 def closed():
   try:
-    __master.update()
+    master.update()
     return __closePressed
   except:
     return True
@@ -474,9 +474,9 @@ def mousePos():
   global __mouseY
 
   try:
-    (x, y) = __canvas.winfo_pointerxy()
-    x = x - __canvas.winfo_rootx()
-    y = y - __canvas.winfo_rooty()
+    (x, y) = canvas.winfo_pointerxy()
+    x = x - canvas.winfo_rootx()
+    y = y - canvas.winfo_rooty()
     __mouseX = x
     __mouseY = y
     return (__mouseX, __mouseY)
@@ -557,9 +557,9 @@ def background(r, g=None, b=None):
     bg = "#%02x%02x%02x" % (r, g, b)
   else:
     raise TypeError("background cannot be called with 2 arguments")
-  #__canvas.configure(background=bg)
+  #canvas.configure(background=bg)
   __bgcolor = bg
-  __canvas.itemconfig(__background,fill=bg)
+  canvas.itemconfig(__background,fill=bg)
   __update()
 
 
@@ -575,11 +575,11 @@ def line(*pts):
       new_pts = list(pts)
     for i in range(len(new_pts)):
       new_pts[i] = new_pts[i] + 1
-    __canvas.create_line(new_pts, fill=__outline, width=__width, capstyle=__capstyle)
+    canvas.create_line(new_pts, fill=__outline, width=__width, capstyle=__capstyle)
     __update()
 
   except Exception as e:
-    if __canvas == None:
+    if canvas == None:
       pass;
     else:
       raise e
@@ -604,11 +604,11 @@ def curve(*pts):
     for i in range(len(new_pts)):
       new_pts[i] = new_pts[i] + 1
 
-    __canvas.create_line(new_pts, fill=__outline, width=__width, capstyle=__capstyle, smooth=True, splinesteps=25)
+    canvas.create_line(new_pts, fill=__outline, width=__width, capstyle=__capstyle, smooth=True, splinesteps=25)
     __update()
 
   except Exception as e:
-    if __canvas == None:
+    if canvas == None:
       pass;
     else:
       raise e
@@ -634,11 +634,11 @@ def blob(*pts):
     for i in range(len(new_pts)):
       new_pts[i] = new_pts[i] + 1
 
-    __canvas.create_polygon(new_pts, fill=__fill, outline=__outline, smooth=1, width=__width)
+    canvas.create_polygon(new_pts, fill=__fill, outline=__outline, smooth=1, width=__width)
     __update()
 
   except Exception as e:
-    if __canvas == None:
+    if canvas == None:
       pass;
     else:
       raise e
@@ -656,7 +656,7 @@ def rect(x, y, w, h):
   h = round(h)
   try:
     if abs(w) >= 2 and abs(h) >= 2:
-      __canvas.create_rectangle(x + 1, y + 1, x + 1 + w - 1, y + 1 + h - 1, fill=__fill, outline=__outline, width=__width)
+      canvas.create_rectangle(x + 1, y + 1, x + 1 + w - 1, y + 1 + h - 1, fill=__fill, outline=__outline, width=__width)
       __update()
     elif abs(w) == 1:
       line(x, y, x, y + h - 1)
@@ -666,7 +666,7 @@ def rect(x, y, w, h):
       __update()
     
   except Exception as e:
-    if __canvas == None:
+    if canvas == None:
       pass;
     else:
       raise e
@@ -681,11 +681,11 @@ def rect(x, y, w, h):
 #  @param h the height of the ellipse
 def ellipse(x, y, w, h):
   try:
-    __canvas.create_oval(x + 1, y + 1, x+w, y+h, fill=__fill, outline=__outline, width=__width)
+    canvas.create_oval(x + 1, y + 1, x+w, y+h, fill=__fill, outline=__outline, width=__width)
     __update()
 
   except Exception as e:
-    if __canvas == None:
+    if canvas == None:
       pass;
     else:
       raise e
@@ -700,11 +700,11 @@ def ellipse(x, y, w, h):
 #  @param align the alignment to use (by default, center the text at (x,y))
 def text(x, y, what, align="c"):
   try:
-    __canvas.create_text(x + 1, y + 1, text=str(what), anchor=align, fill=__outline, font=__font)
+    canvas.create_text(x + 1, y + 1, text=str(what), anchor=align, fill=__outline, font=__font)
     __update()
 
   except Exception as e:
-    if __canvas == None:
+    if canvas == None:
       pass;
     else:
       raise e
@@ -781,10 +781,10 @@ def lineSpace(s=""):
 def resize(w, h):
   global __background
 
-  __canvas.config(width=w, height=h)
-  __canvas.delete(__background)
-  __background = __canvas.create_rectangle(0, 0, w+1, h+1, fill=__bgcolor, outline=__bgcolor, tag="__background")
-  __canvas.lower(__background)
+  canvas.config(width=w, height=h)
+  canvas.delete(__background)
+  __background = canvas.create_rectangle(0, 0, w+1, h+1, fill=__bgcolor, outline=__bgcolor, tag="__background")
+  canvas.lower(__background)
 
 # Get the width of the window or an image
 # @param the image to examine, or None which indates that the width of the
@@ -793,7 +793,7 @@ def resize(w, h):
 def getWidth(what=None):
   if what == None:
     try:
-      return int(__canvas['width'])
+      return int(canvas['width'])
     except TypeError:
       return -1
   elif type(what) is tk.PhotoImage:
@@ -808,7 +808,7 @@ def getWidth(what=None):
 def getHeight(what=None):
   if what == None:
     try:
-      return int(__canvas['height'])
+      return int(canvas['height'])
     except TypeError:
       return -1
   elif type(what) is tk.PhotoImage:
@@ -827,11 +827,11 @@ def getHeight(what=None):
 #  @param e the extent of the arc (*not* the ending angle)
 def arc(x, y, w, h, s, e):
   try:
-    __canvas.create_arc(x + 1, y + 1, x+1+w, y+1+h, start=s, extent=e, fill=__fill, outline=__outline, style=tk.ARC, width=__width)
+    canvas.create_arc(x + 1, y + 1, x+1+w, y+1+h, start=s, extent=e, fill=__fill, outline=__outline, style=tk.ARC, width=__width)
     __update()
 
   except Exception as e:
-    if __canvas == None:
+    if canvas == None:
       pass;
     else:
       raise e
@@ -850,11 +850,11 @@ def arc(x, y, w, h, s, e):
 #  @param e the extent of the arc (*not* the ending angle)
 def pieSlice(x, y, w, h, s, e):
   try:
-    __canvas.create_arc(x + 1, y + 1, x+1+w, y+1+h, start=s, extent=e, fill=__fill, outline=__outline, style=tk.PIESLICE, width=__width)
+    canvas.create_arc(x + 1, y + 1, x+1+w, y+1+h, start=s, extent=e, fill=__fill, outline=__outline, style=tk.PIESLICE, width=__width)
     __update()
 
   except Exception as e:
-    if __canvas == None:
+    if canvas == None:
       pass;
     else:
       raise e
@@ -877,11 +877,11 @@ def polygon(x1, y1=[], *args):
 
     for i in range(len(pts)):
       pts[i] = pts[i] + 1
-    __canvas.create_polygon(pts, fill=__fill, outline=__outline, width=__width)
+    canvas.create_polygon(pts, fill=__fill, outline=__outline, width=__width)
     __update()
 
   except Exception as e:
-    if __canvas == None:
+    if canvas == None:
       pass;
     else:
       raise e
@@ -892,8 +892,8 @@ def polygon(x1, y1=[], *args):
 ## Remove all drawing objects from the canvas
 def clear():
   try:
-    __canvas.delete("all")
-    __background = __canvas.create_rectangle(0, 0, getWidth(), getHeight(), fill=__bgcolor, outline=__bgcolor, tag="__background")
+    canvas.delete("all")
+    __background = canvas.create_rectangle(0, 0, getWidth(), getHeight(), fill=__bgcolor, outline=__bgcolor, tag="__background")
   except AttributeError:
     pass;
   #del __image_references[:]
@@ -919,7 +919,7 @@ def version():
 #  @param fname the name of the file that will be written (normally ends with
 #         .eps)
 def saveEPS(fname):
-  __canvas.postscript(file=fname, colormode="color", width=getWidth(), height=getHeight())
+  canvas.postscript(file=fname, colormode="color", width=getWidth(), height=getHeight())
   
 ## Create a new blank image
 #  @param w the width of the created image
@@ -955,7 +955,7 @@ def putPixel(img, x, y, r, g, b):
 def drawImage(img, x, y):
   global __image_references
 
-  __canvas.create_image(x+1, y+1, image=img, anchor="nw")
+  canvas.create_image(x+1, y+1, image=img, anchor="nw")
   __image_references.add(img)
   __update()
 

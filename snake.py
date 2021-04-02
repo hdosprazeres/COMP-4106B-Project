@@ -1,7 +1,7 @@
 from SimpleGraphics import *
 import sys
-import random
-from queue import PriorityQueue
+import tkinter as tk
+from tkinter.constants import *
 from snake_ai import *
 from game_data import *
 from helper_functions import *
@@ -22,6 +22,7 @@ def game_loop():
 
     resize(rows*blocksize, cols*blocksize)
     background("black")
+    setColor("black")
     setAutoUpdate(False)
 
     # put snake head in correct place
@@ -61,6 +62,7 @@ def game_loop():
 
     # write gameover screen
     setOutline("white")
+    setFont("Helvetica", "24")
     text((rows/2)*blocksize, (cols/2)*blocksize, f"GAMEOVER\npoints: {points}")
 
 
@@ -86,5 +88,56 @@ def command_line_input():
         else:
             print(f"rows and cols between {rows_max}-{rows_min}")
 
-command_line_input()
-game_loop()
+def buttonPressed_heuristic1():
+    print("Heuristic 1 pressed")
+    clear()
+    command_line_input()
+    game_loop()
+
+def buttonPressed_heuristic2():
+    print("Heuristic 2 pressed")
+
+def buttonPressed_heuristic3():
+    print("Heuristic 3 pressed")
+
+def draw_homescreen():
+    setWindowTitle("Snake AI")
+    resize(500, 500)
+    background("black")
+    setAutoUpdate(False)
+
+    setFont("Helvetica", "32")
+    setColor("yellow")
+    text(250, 65, "Welcome to Snake AI!")
+    
+    master.configure(background='black')
+    button_heuristic1 = tk.Button(
+        text="Heuristic 1",
+        width=20,
+        height=5,
+        bg="red",
+        fg="yellow",
+        command=buttonPressed_heuristic1)
+    button_heuristic1.pack(pady=20)
+
+    button_heuristic2 = tk.Button(
+        text="Heuristic 2",
+        width=20,
+        height=5,
+        bg="red",
+        fg="yellow",
+        command=buttonPressed_heuristic2)
+    button_heuristic2.pack(pady=20)
+
+    button_heuristic3 = tk.Button(
+        text="Heuristic 3",
+        width=20,
+        height=5,
+        bg="red",
+        fg="yellow",
+        command=buttonPressed_heuristic3)
+    button_heuristic3.pack(pady=20)
+
+draw_homescreen()
+# command_line_input()
+# game_loop()
