@@ -2,6 +2,9 @@ import random
 import sys
 from game_data import *
 from helper_functions import *
+from snake_ai_v0 import *
+from snake_ai_v1 import *
+from snake_ai_v2 import *
 from snake_ai import *
 from SimpleGraphics import *
 import tkinter as tk
