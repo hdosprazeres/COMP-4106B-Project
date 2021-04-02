@@ -9,7 +9,7 @@ game_data = {
     "block_size": 25,
     "scored_point": False,
     "grid": [[]],
-    "graph": {},
     "path": [],
-    "default_cost":10
+    "graph": {},
+    "default_cost": 10
 }

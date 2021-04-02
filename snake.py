@@ -1,15 +1,19 @@
-from SimpleGraphics import *
+import random
 import sys
-import tkinter as tk
-from tkinter.constants import *
-from snake_ai import *
 from game_data import *
 from helper_functions import *
+from snake_ai import *
+from SimpleGraphics import *
+import tkinter as tk
+from tkinter.constants import *
+
 
 def game_loop():
     '''
     main loop for the game
     '''
+
+    global game_data
     blocksize = game_data["block_size"]
     rows = game_data["rows"]
     cols = game_data["cols"]
@@ -18,75 +22,104 @@ def game_loop():
     game_data["graph"] = make_graph()
 
     sleep_time = 0.05
+    # sleep_time = 0.15
     sleep_step = sleep_time / 50
 
-    resize(rows*blocksize, cols*blocksize)
+    resize(cols*blocksize, rows*blocksize)
     background("black")
-    setColor("black")
     setAutoUpdate(False)
 
     # put snake head in correct place
     game_data["snake"][0][0] = game_data["cols"] // 2
+
+    # create coin
+    # need for snake_ai_v#
     create_coin()
 
-    while True:
+    # check if snake_ai makes an error
+    # 1 is error
+    # 0 is success
+    error = 0
 
-        #print(game_data["snake"])
+    while True:
         points = game_data["points"]
         # save snake tail incase coin picked up
         game_data["snake_tail"] = game_data["snake"][-1]
 
-        # a* search can sit here making decisions about the next move
+        # so human can play game
+        # keys = getHeldKeys()
+        # change_snake_direction(keys)
+
+        # non human player
+        # error = snake_ai_v0()
+        # error = snake_ai_v1()
+        # error = snake_ai_v2()
+        # if error returned from snake_ai
+        if error == 1:
+            break
+
+        # uncomment along with update_snake_ai_v0()
         if not game_data["path"]:
             pathfinding()
 
         # check if snake dead, break loop
         if is_snake_dead():
-            print("Snake is dead!")
             break
 
-        update_snake_ai()
+        # uncomment along with pathfinding
+        update_snake_ai_v0()
 
         check_coin()
         create_coin()
 
+        # clear()
         draw_snake()
         draw_coin()
-        
+
         update()
         sleep(sleep_time)
         # check if scored a point this loop, speed up time
-        # if game_data["scored_point"]:
-        #     sleep_time -= sleep_step
-        #     game_data["scored_point"] = False
+        if game_data["scored_point"]:
+            sleep_time -= sleep_step
+            game_data["scored_point"] = False
 
     # write gameover screen
     setOutline("white")
-    setFont("Helvetica", "24")
-    text((rows/2)*blocksize, (cols/2)*blocksize, f"GAMEOVER\npoints: {points}")
+    text((cols/2)*blocksize, (rows/2)*blocksize, f"GAMEOVER\npoints: {points}")
 
 
-def command_line_input():
+def draw_snake():
     '''
-    takes comand line input to determine screen size
-    see README
+    draw snake by only drawing the new head
+    and erasing the old tail
+    saves on rect calls
     '''
-    rows_min = 5
-    rows_max = 50
+    snake = game_data["snake"]
+    snake_tail = game_data["snake_tail"]
+    blocksize = game_data["block_size"]
+    # draw snake
+    # colour red
+    # draw new head
+    setFill("red")
+    rect(snake[0][0]*blocksize, snake[0][1]
+         * blocksize, blocksize, blocksize)
+    # erase old tail
+    setFill("black")
+    rect(snake_tail[0]*blocksize, snake_tail[1]
+         * blocksize, blocksize, blocksize)
 
-    if len(sys.argv) == 2:
-        if int(sys.argv[1]) >= rows_min and int(sys.argv[1]) <= rows_max:
-            game_data["rows"] = int(sys.argv[1])
-            game_data["cols"] = int(sys.argv[1])
-        else:
-            print(f"rows and cols between {rows_min}-{rows_max}")
-    if len(sys.argv) == 3:
-        if int(sys.argv[1]) >= rows_min and int(sys.argv[1]) <= rows_max:
-            game_data["rows"] = int(sys.argv[1])
-        if int(sys.argv[2]) >= rows_min and int(sys.argv[2]) <= rows_max:
-            game_data["cols"] = int(sys.argv[2])
-        else:
-            print(f"rows and cols between {rows_max}-{rows_min}")
+
+def draw_coin():
+    '''
+    draw coin
+    '''
+    blocksize = game_data["block_size"]
+    coin = game_data["coin"]
+    # draw coin
+    if coin != []:
+        setFill("yellow")
+        rect(coin[0]*blocksize, coin[1]*blocksize, blocksize, blocksize)
+
 
 def buttonPressed_heuristic1():
     print("Heuristic 1 pressed")
@@ -94,11 +127,14 @@ def buttonPressed_heuristic1():
     command_line_input()
     game_loop()
 
+
 def buttonPressed_heuristic2():
     print("Heuristic 2 pressed")
 
+
 def buttonPressed_heuristic3():
     print("Heuristic 3 pressed")
+
 
 def draw_homescreen():
     setWindowTitle("Snake AI")
@@ -109,7 +145,7 @@ def draw_homescreen():
     setFont("Helvetica", "32")
     setColor("yellow")
     text(250, 65, "Welcome to Snake AI!")
-    
+
     master.configure(background='black')
     button_heuristic1 = tk.Button(
         text="Heuristic 1",
@@ -138,6 +174,7 @@ def draw_homescreen():
         command=buttonPressed_heuristic3)
     button_heuristic3.pack(pady=20)
 
-draw_homescreen()
-# command_line_input()
-# game_loop()
+
+# draw_homescreen()
+command_line_input()
+game_loop()
