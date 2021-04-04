@@ -5,6 +5,7 @@ from helper_functions import *
 from snake_ai_v0 import *
 from snake_ai_v1 import *
 from snake_ai_v2 import *
+from snake_ai_v3 import *
 from snake_ai import *
 from SimpleGraphics import *
 import tkinter as tk
@@ -24,8 +25,9 @@ def game_loop():
     game_data["grid"] = create_grid()
     game_data["graph"] = make_graph()
 
-    sleep_time = 0.05
-    # sleep_time = 0.15
+    # sleep_time = 0.05
+    sleep_time = 0.15
+    # sleep_time = 1
     sleep_step = sleep_time / 50
 
     resize(cols*blocksize, rows*blocksize)
@@ -49,28 +51,29 @@ def game_loop():
         # save snake tail incase coin picked up
         game_data["snake_tail"] = game_data["snake"][-1]
 
-        # so human can play game
+        # human player
         # keys = getHeldKeys()
         # change_snake_direction(keys)
 
-        # non human player
+        # ai player
         # error = snake_ai_v0()
         # error = snake_ai_v1()
         # error = snake_ai_v2()
+        error = snake_ai_v3()
         # if error returned from snake_ai
         if error == 1:
             break
 
         # uncomment along with update_snake_ai_v0()
-        if not game_data["path"]:
-            pathfinding()
+        # if not game_data["path"]:
+        #     pathfinding()
 
         # check if snake dead, break loop
         if is_snake_dead():
             break
 
         # uncomment along with pathfinding
-        update_snake_ai_v0()
+        # update_snake_ai_v0()
 
         check_coin()
         create_coin()
