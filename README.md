@@ -4,9 +4,7 @@ COMP-4106B Artificial Intelligence Project
 
 ## How to start
 
-To run with default window size 10x10<br>
-`py snake.py`<br>
-To run with window size AxA<br>
-`py snake.py A`<br>
-To run with window size XxY<br>
-`py snake.py X Y`<br>
+To run with ai 1<br>
+`py snake.py 1`<br>
+To run with ai 2<br>
+`py snake.py 2`<br>

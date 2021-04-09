@@ -6,6 +6,7 @@ from snake_ai_v0 import *
 from snake_ai_v1 import *
 from snake_ai_v2 import *
 from snake_ai_v3 import *
+from snake_ai_v4 import *
 from snake_ai import *
 from SimpleGraphics import *
 import tkinter as tk
@@ -25,10 +26,7 @@ def game_loop():
     game_data["grid"] = create_grid()
     game_data["graph"] = make_graph()
 
-    # sleep_time = 0.05
-    sleep_time = 0.15
-    # sleep_time = 1
-    sleep_step = sleep_time / 50
+    sleep_time = 0.05
 
     resize(cols*blocksize, rows*blocksize)
     background("black")
@@ -59,21 +57,25 @@ def game_loop():
         # error = snake_ai_v0()
         # error = snake_ai_v1()
         # error = snake_ai_v2()
-        error = snake_ai_v3()
+        # error = snake_ai_v3()
+        if game_data["ai"] == "snake_ai_v4":
+            error = snake_ai_v4()
         # if error returned from snake_ai
         if error == 1:
             break
 
         # uncomment along with update_snake_ai_v0()
-        # if not game_data["path"]:
-        #     pathfinding()
+        if game_data["ai"] == "snake_ai":
+            if not game_data["path"]:
+                pathfinding()
 
         # check if snake dead, break loop
         if is_snake_dead():
             break
 
         # uncomment along with pathfinding
-        # update_snake_ai_v0()
+        if game_data["ai"] == "snake_ai":
+            update_snake_ai_v0()
 
         check_coin()
         create_coin()
@@ -86,12 +88,14 @@ def game_loop():
         sleep(sleep_time)
         # check if scored a point this loop, speed up time
         if game_data["scored_point"]:
-            sleep_time -= sleep_step
+            sleep_time -= sleep_time * 0.05
             game_data["scored_point"] = False
 
     # write gameover screen
     setOutline("white")
     text((cols/2)*blocksize, (rows/2)*blocksize, f"GAMEOVER\npoints: {points}")
+    # save score
+    save_score(points)
 
 
 def draw_snake():

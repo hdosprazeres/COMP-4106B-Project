@@ -1,5 +1,7 @@
 import random
 import sys
+import os
+import math
 from game_data import *
 
 
@@ -120,24 +122,85 @@ def check_coin():
             game_data["snake"].append(snake_tail)
 
 
+# def command_line_input():
+#     '''
+#     takes comand line input to determine screen size
+#     see README
+#     '''
+#     size_min = 5
+#     size_max = 15
+
+#     if len(sys.argv) == 2:
+#         if int(sys.argv[1]) >= size_min and int(sys.argv[1]) <= size_max:
+#             game_data["rows"] = int(sys.argv[1])
+#             game_data["cols"] = int(sys.argv[1])
+#         else:
+#             print(f"rows and cols between {size_min}-{size_max}")
+#     if len(sys.argv) == 3:
+#         if int(sys.argv[1]) >= size_min and int(sys.argv[1]) <= size_max:
+#             game_data["cols"] = int(sys.argv[1])
+#         if int(sys.argv[2]) >= size_min and int(sys.argv[2]) <= size_max:
+#             game_data["rows"] = int(sys.argv[2])
+#         else:
+#             print(f"rows and cols between {size_max}-{size_min}")
+
+
 def command_line_input():
     '''
     takes comand line input to determine screen size
+    also determines ai used
     see README
     '''
-    size_min = 5
-    size_max = 50
+    # size_min = 5
+    # size_max = 15
+    ais = ["snake_ai", "snake_ai_v4"]
 
     if len(sys.argv) == 2:
-        if int(sys.argv[1]) >= size_min and int(sys.argv[1]) <= size_max:
-            game_data["rows"] = int(sys.argv[1])
-            game_data["cols"] = int(sys.argv[1])
-        else:
-            print(f"rows and cols between {size_min}-{size_max}")
-    if len(sys.argv) == 3:
-        if int(sys.argv[1]) >= size_min and int(sys.argv[1]) <= size_max:
-            game_data["cols"] = int(sys.argv[1])
-        if int(sys.argv[2]) >= size_min and int(sys.argv[2]) <= size_max:
-            game_data["rows"] = int(sys.argv[2])
-        else:
-            print(f"rows and cols between {size_max}-{size_min}")
+        if int(sys.argv[1]) >= 1 and int(sys.argv[1]) <= len(ais):
+            game_data["ai"] = ais[int(sys.argv[1])-1]
+            game_data["rows"] = 10
+            game_data["cols"] = 10
+
+    # if len(sys.argv) == 3:
+    #     if int(sys.argv[1]) >= 1 and int(sys.argv[1]) <= len(ais):
+    #         game_data["ai"] = ais[int(sys.argv[1])-1]
+    #     if int(sys.argv[2]) >= size_min and int(sys.argv[2]) <= size_max:
+    #         game_data["rows"] = int(sys.argv[2])
+    #         game_data["cols"] = int(sys.argv[2])
+
+
+def save_score(score):
+    '''
+    saves the score and ai used to a file
+    print highest, lowest and average score of ai
+    '''
+    location = os.getcwd()
+    ai = game_data["ai"]
+    file_path = os.path.abspath(os.path.join(location, ai + "_scores.csv"))
+    # if file doesn't exist create
+    if os.path.exists(file_path) == False:
+        f = open(file_path, "w")
+        f.write(str(score) + "\n")
+        f.close()
+    else:
+        f = open(file_path, "a")
+        f.write(str(score) + "\n")
+        f.close()
+    f = open(file_path, "r")
+    lines = 0.
+    sum_ = 0.
+    highest = -math.inf
+    lowest = math.inf
+    for line in f.readlines():
+        lines += 1
+        num = int(line)
+        sum_ += num
+        if num > highest:
+            highest = num
+        if num < lowest:
+            lowest = num
+
+    print(ai)
+    print("highest score:", highest)
+    print("lowest score:", lowest)
+    print("average score:", sum_/lines)

@@ -1,4 +1,5 @@
 game_data = {
+    "ai": "",
     "rows": 10,
     "cols": 10,
     "points": 0,
