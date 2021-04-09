@@ -136,8 +136,8 @@ def command_line_input():
             print(f"rows and cols between {size_min}-{size_max}")
     if len(sys.argv) == 3:
         if int(sys.argv[1]) >= size_min and int(sys.argv[1]) <= size_max:
-            game_data["rows"] = int(sys.argv[1])
+            game_data["cols"] = int(sys.argv[1])
         if int(sys.argv[2]) >= size_min and int(sys.argv[2]) <= size_max:
-            game_data["cols"] = int(sys.argv[2])
+            game_data["rows"] = int(sys.argv[2])
         else:
             print(f"rows and cols between {size_max}-{size_min}")
