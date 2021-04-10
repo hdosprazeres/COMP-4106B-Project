@@ -153,7 +153,7 @@ def command_line_input():
     '''
     # size_min = 5
     # size_max = 15
-    ais = ["snake_ai", "snake_ai_v4"]
+    ais = ["snake_ai", "snake_ai_v4", "snake_ai_v5"]
 
     if len(sys.argv) == 2:
         if int(sys.argv[1]) >= 1 and int(sys.argv[1]) <= len(ais):
@@ -201,6 +201,7 @@ def save_score(score):
             lowest = num
 
     print(ai)
+    print("current score:", score)
     print("highest score:", highest)
     print("lowest score:", lowest)
     print("average score:", sum_/lines)

@@ -7,6 +7,7 @@ from snake_ai_v1 import *
 from snake_ai_v2 import *
 from snake_ai_v3 import *
 from snake_ai_v4 import *
+from snake_ai_v5 import *
 from snake_ai import *
 from SimpleGraphics import *
 import tkinter as tk
@@ -60,6 +61,8 @@ def game_loop():
         # error = snake_ai_v3()
         if game_data["ai"] == "snake_ai_v4":
             error = snake_ai_v4()
+        if game_data["ai"] == "snake_ai_v5":
+            error = snake_ai_v5()
         # if error returned from snake_ai
         if error == 1:
             break
