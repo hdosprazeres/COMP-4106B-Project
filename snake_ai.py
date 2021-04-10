@@ -195,6 +195,9 @@ def update_snake_ai_v0():
     # print("update_snake_ai()")
     snake = game_data["snake"]
     path = game_data["path"]
+    if not path:
+        game_data["game_over"] = True
+        return
     new_x = game_data["path"][0][0]
     new_y = game_data["path"][0][1]
     node = (new_x, new_y)
@@ -395,7 +398,7 @@ def pathfinding():
                         float(graph[(xn, yn)][2]) + \
                         heuristics(node, goal_location)
                     node_cost = current_cost + float(graph[(xn, yn)][2])
-                print(node_cost)
+                # print(node_cost)
             # Add value to frontier
                 frontier.put(
                     (estimated_cost, node_cost, node, current_location))
@@ -456,7 +459,7 @@ def backtracking(goal_node, explored_list):
         # explored list returns 0 or 1 elements when the snake dies
         if len(explored_list) <= 1:
             # band aid fix, technically shouldn't be returning the goal node as path
-            path.append(node)
+            path = []
             break
 
         for item in explored_list:

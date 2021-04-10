@@ -72,13 +72,18 @@ def game_loop():
             if not game_data["path"]:
                 pathfinding()
 
+    # uncomment along with pathfinding
+        if game_data["ai"] == "snake_ai":
+            update_snake_ai_v0()
+
         # check if snake dead, break loop
-        if is_snake_dead():
+        is_snake_dead()
+        if game_data["game_over"]:
             break
 
         # uncomment along with pathfinding
-        if game_data["ai"] == "snake_ai":
-            update_snake_ai_v0()
+        # if game_data["ai"] == "snake_ai":
+        #     update_snake_ai_v0()
 
         check_coin()
         create_coin()

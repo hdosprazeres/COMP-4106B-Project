@@ -27,12 +27,12 @@ def is_snake_dead():
     snake = game_data["snake"]
     # check if snake running into self
     if snake[0] in snake[1:]:
-        return True
+        game_data["game_over"] = True
     # check if snake out of bounds
     if snake[0][0] < 0 or snake[0][0] >= game_data["cols"]:
-        return True
+        game_data["game_over"] = True
     if snake[0][1] < 0 or snake[0][1] >= game_data["rows"]:
-        return True
+        game_data["game_over"] = True
 
 
 def change_snake_direction(keys):

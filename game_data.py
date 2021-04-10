@@ -12,5 +12,6 @@ game_data = {
     "grid": [[]],
     "path": [],
     "graph": {},
-    "default_cost": 10
+    "default_cost": 10,
+    "game_over": False
 }
