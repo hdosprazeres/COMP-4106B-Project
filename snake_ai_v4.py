@@ -5,6 +5,7 @@
 import random
 import sys
 import copy
+import math
 from game_data import *
 from helper_functions import *
 
@@ -137,6 +138,18 @@ def is_node_in_list(node, array):
     return False
 
 
+def euclidean_distance(current_location, goal_location):
+    '''
+    calculate euclidean distance from current to goal
+    '''
+    print("current_location:", current_location)
+    print("goal_location:", goal_location)
+    heuristic = math.sqrt(
+        (current_location[0] - goal_location[0])**2 + (current_location[1] - goal_location[1])**2)
+    print("heuristic:", heuristic)
+    return heuristic
+
+
 def find_path_to_coin(grid, start_state, goal_state):
     '''
     find and return path to coin
@@ -151,6 +164,10 @@ def find_path_to_coin(grid, start_state, goal_state):
         if frontier == []:
             return 1
         current = frontier.pop(0)
+        fn = current[1] + euclidean_distance(current[0], goal_state)
+        current = (current[0], fn, current[2])
+        # calculate heuristic for node to goal
+        # use euclidean distance
         explored.append(current)
         # found coin, add to path, break loop
         if current[0] == goal_state:
@@ -160,8 +177,8 @@ def find_path_to_coin(grid, start_state, goal_state):
                 # if node not in frontier and node not in explored:
                 frontier.append((node, current[1]+1, current[0]))
     # create path
-    # print("explored len:", len(explored))
-    # print("explored:", explored)
+    print("explored len:", len(explored))
+    print("explored:", explored)
     path = create_path_to_coin(explored)
     # print("path:", path)
     # print()
@@ -225,8 +242,8 @@ def a_star_search():
         # print("****************************\n*****COIN NOT REACHABLE*****\n****************************")
         goal_state = None
     path = []
-    # print("start_state:", start_state[0])
-    # print("goal_state:", goal_state)
+    print("start_state:", start_state[0])
+    print("goal_state:", goal_state)
     # print("grid:", grid)
     # if goal_state is not in grid of currently reachable nodes
     # then continue on a path that does not kill snake
