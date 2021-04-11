@@ -12,8 +12,8 @@ from ai import snake_ai_v5
 from ai import snake_ai_v6
 from ai import snake_ai
 from SimpleGraphics import *
-import tkinter as tk
-from tkinter.constants import *
+# import tkinter as tk
+# from tkinter.constants import *
 
 
 def game_loop():
@@ -73,23 +73,15 @@ def game_loop():
         if error == 1:
             break
 
-        # uncomment along with update_snake_ai_v0()
         if game_data["ai"] == "snake_ai":
             if not game_data["path"]:
                 snake_ai.pathfinding()
-
-        # uncomment along with pathfinding
-        if game_data["ai"] == "snake_ai":
             snake_ai.update_snake_ai_v0()
 
         # check if snake dead, break loop
         is_snake_dead()
         if game_data["game_over"]:
             break
-
-        # uncomment along with pathfinding
-        # if game_data["ai"] == "snake_ai":
-        #     update_snake_ai_v0()
 
         check_coin()
         create_coin()
