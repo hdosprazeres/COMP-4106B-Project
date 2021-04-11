@@ -145,7 +145,6 @@ def buttonPressed_heuristic1():
     command_line_input()
     game_loop()
 
-
 def buttonPressed_heuristic2():
     print("Heuristic 2 pressed")
 

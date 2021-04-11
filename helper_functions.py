@@ -121,6 +121,22 @@ def check_coin():
             game_data["coin"] = []
             game_data["snake"].append(snake_tail)
 
+def listOfLists_to_listOfTuples(listOfLists):
+    listOfTuples = listOfLists
+    for i, list in enumerate(listOfTuples):
+        listOfTuples[i] = tuple(list)
+
+    return listOfTuples
+
+def numberOfBarriers(neighbours, snake):
+    #find out how many barriers(boundary/snake body) are around this node
+    barriers = sum(nd in neighbours for nd in snake)
+    #add number of boundaries to barrier count 
+    if len(neighbours) < 4:
+        add = 4 - len(neighbours)
+        barriers += add
+
+    return barriers
 
 # def command_line_input():
 #     '''
