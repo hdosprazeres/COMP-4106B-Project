@@ -1,14 +1,16 @@
 import random
+import os
 import sys
 from game_data import *
 from helper_functions import *
-from snake_ai_v0 import *
-from snake_ai_v1 import *
-from snake_ai_v2 import *
-from snake_ai_v3 import *
-from snake_ai_v4 import *
-from snake_ai_v5 import *
-from snake_ai import *
+from ai import snake_ai_v0
+from ai import snake_ai_v1
+from ai import snake_ai_v2
+from ai import snake_ai_v3
+from ai import snake_ai_v4
+from ai import snake_ai_v5
+from ai import snake_ai_v6
+from ai import snake_ai
 from SimpleGraphics import *
 import tkinter as tk
 from tkinter.constants import *
@@ -25,7 +27,7 @@ def game_loop():
     cols = game_data["cols"]
 
     game_data["grid"] = create_grid()
-    game_data["graph"] = make_graph()
+    game_data["graph"] = snake_ai.make_graph()
 
     sleep_time = 0.05
 
@@ -60,9 +62,11 @@ def game_loop():
         # error = snake_ai_v2()
         # error = snake_ai_v3()
         if game_data["ai"] == "snake_ai_v4":
-            error = snake_ai_v4()
+            error = snake_ai_v4.snake_ai_v4()
         if game_data["ai"] == "snake_ai_v5":
-            error = snake_ai_v5()
+            error = snake_ai_v5.snake_ai_v5()
+        if game_data["ai"] == "snake_ai_v6":
+            error = snake_ai_v6.snake_ai_v6()
         # if error returned from snake_ai
         if error == 1:
             break
@@ -70,11 +74,11 @@ def game_loop():
         # uncomment along with update_snake_ai_v0()
         if game_data["ai"] == "snake_ai":
             if not game_data["path"]:
-                pathfinding()
+                snake_ai.pathfinding()
 
-    # uncomment along with pathfinding
+        # uncomment along with pathfinding
         if game_data["ai"] == "snake_ai":
-            update_snake_ai_v0()
+            snake_ai.update_snake_ai_v0()
 
         # check if snake dead, break loop
         is_snake_dead()
@@ -139,57 +143,57 @@ def draw_coin():
         rect(coin[0]*blocksize, coin[1]*blocksize, blocksize, blocksize)
 
 
-def buttonPressed_heuristic1():
-    print("Heuristic 1 pressed")
-    clear()
-    command_line_input()
-    game_loop()
+# def buttonPressed_heuristic1():
+#     print("Heuristic 1 pressed")
+#     clear()
+#     command_line_input()
+#     game_loop()
 
-def buttonPressed_heuristic2():
-    print("Heuristic 2 pressed")
-
-
-def buttonPressed_heuristic3():
-    print("Heuristic 3 pressed")
+# def buttonPressed_heuristic2():
+#     print("Heuristic 2 pressed")
 
 
-def draw_homescreen():
-    setWindowTitle("Snake AI")
-    resize(500, 500)
-    background("black")
-    setAutoUpdate(False)
+# def buttonPressed_heuristic3():
+#     print("Heuristic 3 pressed")
 
-    setFont("Helvetica", "32")
-    setColor("yellow")
-    text(250, 65, "Welcome to Snake AI!")
 
-    master.configure(background='black')
-    button_heuristic1 = tk.Button(
-        text="Heuristic 1",
-        width=20,
-        height=5,
-        bg="red",
-        fg="yellow",
-        command=buttonPressed_heuristic1)
-    button_heuristic1.pack(pady=20)
+# def draw_homescreen():
+#     setWindowTitle("Snake AI")
+#     resize(500, 500)
+#     background("black")
+#     setAutoUpdate(False)
 
-    button_heuristic2 = tk.Button(
-        text="Heuristic 2",
-        width=20,
-        height=5,
-        bg="red",
-        fg="yellow",
-        command=buttonPressed_heuristic2)
-    button_heuristic2.pack(pady=20)
+#     setFont("Helvetica", "32")
+#     setColor("yellow")
+#     text(250, 65, "Welcome to Snake AI!")
 
-    button_heuristic3 = tk.Button(
-        text="Heuristic 3",
-        width=20,
-        height=5,
-        bg="red",
-        fg="yellow",
-        command=buttonPressed_heuristic3)
-    button_heuristic3.pack(pady=20)
+#     master.configure(background='black')
+#     button_heuristic1 = tk.Button(
+#         text="Heuristic 1",
+#         width=20,
+#         height=5,
+#         bg="red",
+#         fg="yellow",
+#         command=buttonPressed_heuristic1)
+#     button_heuristic1.pack(pady=20)
+
+#     button_heuristic2 = tk.Button(
+#         text="Heuristic 2",
+#         width=20,
+#         height=5,
+#         bg="red",
+#         fg="yellow",
+#         command=buttonPressed_heuristic2)
+#     button_heuristic2.pack(pady=20)
+
+#     button_heuristic3 = tk.Button(
+#         text="Heuristic 3",
+#         width=20,
+#         height=5,
+#         bg="red",
+#         fg="yellow",
+#         command=buttonPressed_heuristic3)
+#     button_heuristic3.pack(pady=20)
 
 
 # draw_homescreen()

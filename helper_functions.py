@@ -121,6 +121,7 @@ def check_coin():
             game_data["coin"] = []
             game_data["snake"].append(snake_tail)
 
+
 def listOfLists_to_listOfTuples(listOfLists):
     listOfTuples = listOfLists
     for i, list in enumerate(listOfTuples):
@@ -128,10 +129,11 @@ def listOfLists_to_listOfTuples(listOfLists):
 
     return listOfTuples
 
+
 def numberOfBarriers(neighbours, snake):
-    #find out how many barriers(boundary/snake body) are around this node
+    # find out how many barriers(boundary/snake body) are around this node
     barriers = sum(nd in neighbours for nd in snake)
-    #add number of boundaries to barrier count 
+    # add number of boundaries to barrier count
     if len(neighbours) < 4:
         add = 4 - len(neighbours)
         barriers += add
@@ -169,7 +171,7 @@ def command_line_input():
     '''
     # size_min = 5
     # size_max = 15
-    ais = ["snake_ai", "snake_ai_v4", "snake_ai_v5"]
+    ais = ["snake_ai", "snake_ai_v4", "snake_ai_v5", "snake_ai_v6"]
 
     if len(sys.argv) == 2:
         if int(sys.argv[1]) >= 1 and int(sys.argv[1]) <= len(ais):
@@ -192,7 +194,8 @@ def save_score(score):
     '''
     location = os.getcwd()
     ai = game_data["ai"]
-    file_path = os.path.abspath(os.path.join(location, ai + "_scores.csv"))
+    file_path = os.path.abspath(os.path.join(
+        location, "scores", ai + "_scores.csv"))
     # if file doesn't exist create
     if os.path.exists(file_path) == False:
         f = open(file_path, "w")

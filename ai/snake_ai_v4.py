@@ -1,8 +1,7 @@
 ##
 # this file implements a star search snake ai
-# it calculates manhattan distance as path cost (inside sqaure have a cost of 1 and outside squares a cost of 3)
-# it uses euclidean distance for heuristic
-# the goal for this is that it will take inside paths more often so that if it gets into a weird position it can take the outside path to escape
+# specifically it uses a square cost of 1 for each square
+# it uses manhattan distance for heuristic
 
 import random
 import sys
@@ -152,22 +151,16 @@ def euclidean_distance(current_location, goal_location):
     return heuristic
 
 
-def cost_of_square(current_location):
+def manhattan_distance(current_location, goal_location):
     '''
-    if square is on outside boundary give cost of 3, rest 1
+    calculate euclidean distance from current to goal
     '''
-    rows = game_data["rows"]
-    cols = game_data["cols"]
     # print("current_location:", current_location)
-    cost = 0
-    if current_location[0] == 0 or current_location[0] == cols-1:
-        cost = 3
-    elif current_location[1] == 0 or current_location[1] == rows-1:
-        cost = 3
-    else:
-        cost = 1
-    # print("cost:", cost)
-    return cost
+    # print("goal_location:", goal_location)
+    heuristic = abs(current_location[0] - goal_location[0]) + \
+        abs(current_location[1] - goal_location[1])
+    # print("heuristic:", heuristic)
+    return heuristic
 
 
 def find_path_to_coin(grid, start_state, goal_state):
@@ -184,8 +177,8 @@ def find_path_to_coin(grid, start_state, goal_state):
         if frontier == []:
             return 1
         current = frontier.pop(0)
-        fn = cost_of_square(current[0]) + \
-            euclidean_distance(current[0], goal_state)
+        # fn = current[1] + euclidean_distance(current[0], goal_state)
+        fn = current[1] + manhattan_distance(current[0], goal_state)
         current = (current[0], fn, current[2])
         # calculate heuristic for node to goal
         # use euclidean distance
@@ -244,8 +237,7 @@ def take_move_biggest_reachable(grid, start_state):
         if open_spaces[i] > spaces:
             index = i
             spaces = open_spaces[i]
-    # print("taking move:", valid_moves[index],
-        #   "open space:", open_spaces[index])
+    # print("taking move:", valid_moves[index])
     return [valid_moves[index]]
 
 
@@ -283,7 +275,7 @@ def a_star_search():
     return 0
 
 
-def snake_ai_v5():
+def snake_ai_v4():
     '''
     path is created if path is currently empty
     new path is created every time a new coin is created
@@ -294,7 +286,7 @@ def snake_ai_v5():
         ret = a_star_search()
     # error occured in create_path_v0
     if ret == 1:
-        print("snake_ai_v5 error")
+        print("snake_ai_v4 error")
         return ret
     update_snake_ai_v1()
     return ret
