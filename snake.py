@@ -29,7 +29,9 @@ def game_loop():
     game_data["grid"] = create_grid()
     game_data["graph"] = snake_ai.make_graph()
 
-    sleep_time = 0.05
+    # sleep_time = 0.05
+    # for automated testing only
+    sleep_time = 0
 
     resize(cols*blocksize, rows*blocksize)
     background("black")
@@ -108,6 +110,8 @@ def game_loop():
     text((cols/2)*blocksize, (rows/2)*blocksize, f"GAMEOVER\npoints: {points}")
     # save score
     save_score(points)
+    # for automated testing only
+    close()
 
 
 def draw_snake():
