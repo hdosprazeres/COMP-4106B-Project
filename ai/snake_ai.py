@@ -5,188 +5,6 @@ from helper_functions import *
 from queue import PriorityQueue
 from math import *
 
-
-# def snake_ai_v0():
-#     '''
-#     choose direction of snake randomly
-#     '''
-#     num = random.randrange(4)
-#     if num == 0:
-#         game_data["snake_direction"] = "up"
-#     elif num == 1:
-#         game_data["snake_direction"] = "down"
-#     elif num == 2:
-#         game_data["snake_direction"] = "left"
-#     elif num == 3:
-#         game_data["snake_direction"] = "right"
-#     # create new head of snake depending on current direction
-#     update_snake()
-#     return 0
-
-
-# def snake_ai_v1():
-#     '''
-#     choose direction of snake
-#     go straight to coin
-#     no movement restricitons therefore possible to move back on self and die
-#     '''
-#     head = game_data["snake"][0]
-#     coin = game_data["coin"]
-#     print("head", head)
-#     print("coin", coin)
-#     # if snake head is below coin on grid
-#     # move up on grid until in same row
-#     if head[1] > coin[1]:
-#         print("up")
-#         game_data["snake_direction"] = "up"
-#     # if snake head is above coin on grid
-#     # move down on grid until in same row
-#     elif head[1] < coin[1]:
-#         print("down")
-#         game_data["snake_direction"] = "down"
-#     # if snake head is right of coin on grid
-#     # move left on grid until in same row
-#     elif head[0] > coin[0]:
-#         print("left")
-#         game_data["snake_direction"] = "left"
-#     # if snake head is left of coin on grid
-#     # move right on grid until in same row
-#     elif head[0] < coin[0]:
-#         print("right")
-#         game_data["snake_direction"] = "right"
-#     # create new head of snake depending on current direction
-#     update_snake()
-#     return 0
-
-
-# def valid_move(next_move, open_squares):
-#     '''
-#     next_move is a location [col, row]
-#     open_squares is a list [[col, row]] of open location on grid
-#     checks if next_move is a valid location in open_squares
-#     '''
-#     if next_move in open_squares:
-#         return True
-#     else:
-#         return False
-
-
-# def get_open_squares():
-#     '''
-#     return a array of [x,y] coordinates
-#     on the grid that are not snake or coin
-#     '''
-#     snake = game_data["snake"]
-#     grid = game_data["grid"]
-#     return [i for i in grid if i not in snake]
-
-
-# def create_path_v0():
-#     '''
-#     creates a path from snake head to coin
-#     that does not go out of bounds or hit self
-#     '''
-#     head = game_data["snake"][0]
-#     coin = game_data["coin"]
-#     rows = game_data["rows"]
-#     cols = game_data["cols"]
-#     print("head", head)
-#     print("coin", coin)
-#     # creat a list of all legal moves
-#     open_squares = get_open_squares()
-#     print(open_squares)
-#     current_head = head
-#     path = []
-#     # incase loop doesn't work kill after rows*cols loops
-#     count = 0
-#     # find a path from coin snake head to coin using open squares
-#     while True:
-#         # if count is not same length as path, then no moves were made
-#         if count != len(path):
-#             print("create_path_v0 error")
-#             print("valid move could not be made")
-#             return 1
-#         # kill incase looped more times than squares on board
-#         if count == rows * cols:
-#             sys.exit(0)
-#         print()
-#         print("path", path)
-#         # if first element of path is equal to coin
-#         # then we have found a full path from snake head to coin
-#         # can exit loop
-#         if path != [] and path[0] == coin:
-#             break
-#         # assign current head to first element of path
-#         # allows us to build up a path from the current_head position to the coin
-#         # without hitting self or stepping out of bounds
-#         if path != []:
-#             current_head = path[0]
-#         print("current_head", current_head)
-#         # current_head below coin on grid
-#         # try to move up
-#         if current_head[1] > coin[1] and valid_move([current_head[0], current_head[1]-1], open_squares):
-#             print("up")
-#             print("next_move", [current_head[0], current_head[1]-1])
-#             path.insert(0, [current_head[0], current_head[1]-1])
-#         # current_head above coin on grid
-#         # try to move down
-#         elif current_head[1] < coin[1] and valid_move([current_head[0], current_head[1]+1], open_squares):
-#             print("down")
-#             print("next_move", [current_head[0], current_head[1]+1])
-#             path.insert(0, [current_head[0], current_head[1]+1])
-#          # current_head right of coin on grid
-#         # try to move left
-#         elif current_head[0] > coin[0] and valid_move([current_head[0]-1, current_head[1]], open_squares):
-#             print("left")
-#             print("next_move", [current_head[0]-1, current_head[1]])
-#             path.insert(0, [current_head[0]-1, current_head[1]])
-#          # current_head left of coin on grid
-#         # try to move right
-#         elif current_head[0] < coin[0] and valid_move([current_head[0]+1, current_head[1]], open_squares):
-#             print("right")
-#             print("next_move", [current_head[0]+1, current_head[1]])
-#             path.insert(0, [current_head[0]+1, current_head[1]])
-#         count += 1
-#     # the first element of path will be the coin
-#     # and the last element of path will be the next position from the current snake head position
-#     # must reverse list so that 1st element is next move
-#     path.reverse()
-#     game_data["path"] = path
-#     return 0
-
-
-# def update_snake_ai_v1():
-#     '''
-#     update snake body
-#     by adding head to path head as new snake head
-#     '''
-#     new_head = game_data["path"].pop(0)
-#     game_data["snake"].insert(0, new_head)
-#     game_data["snake"].pop(-1)
-
-
-# def snake_ai_v2():
-#     '''
-#     choose direction of snake
-#     go straight to coin
-#     with movement restrictions not allowing coin to move back onto self or out of bounds
-#     first create a path that the snake will take
-#     then base on path choose a direction
-#     function only creates a new path if path is currently empty
-#     which means it will only create path upon game start and coin pick up
-#     '''
-#     ret = 0
-#     # if path is empty create a new path
-#     if game_data["path"] == []:
-#         ret = create_path_v0()
-#     # error occured in create_path_v0
-#     if ret == 1:
-#         print("snake_ai_v2 error")
-#         return ret
-#     update_snake_ai_v1()
-#     return ret
-
-
 def update_snake_ai_v0():
     '''
     based on snake direction pick where new head will be
@@ -230,22 +48,35 @@ def make_graph():
     return G
 
 
-def heuristics(node_location, coin_location):
+def heuristics(func,node_location, coin_location):
+    '''
+    this function passes the parameters to a given heuristic function (func)
+    '''
+    return func(node_location,coin_location)
+
+def manhattan(node_location, coin_location):
     '''
     this function implements the manhattan distance heuristic
     '''
-
     (x1, y1) = node_location
     (xn, yn) = coin_location
 
     return abs(x1-xn) + abs(y1-yn)
 
+def euclidean(node_location,coin_location):
+    '''
+    this function implements the euclidean distance heuristic
+    '''
+    (x1, y1) = node_location
+    (xn, yn) = coin_location
+
+    return math.sqrt((xn-x1)**2+(yn-y1)**2)
 
 def update_actual_cost():
     '''
     this function updates the actual cost of graph nodes
     '''
-    # reset_cost()
+    reset_cost()
     radial_distance()
     wall_proximity()
     body_proximity()
@@ -254,6 +85,7 @@ def update_actual_cost():
 
 def radial_distance():
     distance_factor = int(game_data["rows"]*game_data["cols"]/10)
+    discount_factor = 20
     xc = game_data["coin"][0]
     yc = game_data["coin"][1]
     for i in range(-distance_factor, distance_factor):
@@ -261,29 +93,52 @@ def radial_distance():
         for j in range(-distance_factor, distance_factor):
             y = yc + j
 
-            if 0 <= x < game_data["rows"] and 0 <= y < game_data["cols"]:
-                game_data["graph"][(x, y)][2] = game_data["graph"][(
-                    x, y)][2] - sqrt((xc-x)**2+(yc-y)**2)
+            if 0 <= x < game_data["rows"] and 0 <= y < game_data["cols"] and game_data["graph"][(x,y)][1] == True:
+               
+                barriers = 0
+                for nb in game_data["graph"][(x,y)][0]:
+                    if nb[1] == False:
+                        barriers += 1
+
+                barrier_factor = barriers/len(game_data["graph"][(x,y)][0])
+
+                game_data["graph"][(x, y)][2] = game_data["graph"][(x, y)][2] + sqrt((xc-x)**2+(yc-y)**2) -discount_factor*abs(barrier_factor-1)
 
 
 def wall_proximity():
-    distance_factor = 2
-    discount_factor = 3
+    distance_factor = 1
+    discount_factor = 30
     rows = game_data["rows"]
     cols = game_data["cols"]
 
-    for node in game_data["snake"]:
-        x, y = node
+    for j in range(cols):
 
-        if (x - distance_factor) < 0 or (x+distance_factor) > rows or (y-distance_factor) < 0 or (y+distance_factor) > cols:
+        for i in range(0,distance_factor):
 
-            game_data["graph"][(x, y)][2] = game_data["graph"][(
-                x, y)][2] - discount_factor
+            game_data["graph"][(i,j)][2] += discount_factor
+        for i in range(rows-1-distance_factor,rows):
+            game_data["graph"][(i,j)][2] += discount_factor
+
+    for i in range(rows):
+
+        for j in range(0,distance_factor):
+
+            game_data["graph"][(i,j)][2] += discount_factor
+        
+        for j in range(cols-1-distance_factor,cols):
+            game_data["graph"][(i,j)][2] += discount_factor
+    
+    # for node in game_data["snake"]:
+    #     x, y = node
+
+    #     if (x - distance_factor) <= 0 or (x+distance_factor) >= rows or (y-distance_factor) <= 0 or (y+distance_factor) >= cols:
+
+    #         game_data["graph"][(x, y)][2] -= discount_factor
 
 
 def body_proximity():
-    distance_factor = 2
-    discount_factor = 3
+    distance_factor = 3
+    discount_factor = 20
     snake = game_data["snake"]
     head = snake[0]
     for i in range(len(snake)):
@@ -297,7 +152,7 @@ def body_proximity():
 
                 if 0 <= xtemp < game_data["rows"] and 0 <= ytemp < game_data["cols"] and game_data["graph"][(xtemp, ytemp)][1] == True:
                     game_data["graph"][(xtemp, ytemp)][2] = game_data["graph"][(
-                        xtemp, ytemp)][1] - discount_factor + 20*(abs(xtemp-head[0])+abs(ytemp-head[1]))
+                        xtemp, ytemp)][2] - discount_factor + 3*(abs(xtemp-head[0])+abs(ytemp-head[1]))
 
 # Things to fix, add logic to avoid putting the same path in the dead end list if it was already found
 
@@ -430,6 +285,9 @@ def pathfinding():
     xg, yg = game_data["coin"]
     goal_location = (xg, yg)
 
+    #Declare a heuristic function to be used
+
+    heuristic_function = manhattan
     # Declare a frontier (as priority queue) and an explored list.
     frontier = PriorityQueue()
     explored = []
@@ -438,7 +296,7 @@ def pathfinding():
     update_actual_cost()
     cost_so_far = 0
     parent = None
-    estimated_cost = heuristics(start_location, goal_location)
+    estimated_cost = heuristics(heuristic_function,start_location, goal_location)
 
     # frontier.put((estimated_cost,cost_so_far,start_location,parent))
     frontier.put((estimated_cost, cost_so_far, start_location, parent))
@@ -473,7 +331,7 @@ def pathfinding():
                 else:
                     estimated_cost = current_cost + \
                         float(graph[(xn, yn)][2]) + \
-                        heuristics(node, goal_location)
+                        heuristics(heuristic_function,node, goal_location)
                     node_cost = current_cost + float(graph[(xn, yn)][2])
                 # print(node_cost)
             # Add value to frontier
@@ -536,7 +394,6 @@ def backtracking(goal_node, explored_list):
         # explored list returns 0 or 1 elements when the snake dies
         if len(explored_list) <= 1:
             # band aid fix, technically shouldn't be returning the goal node as path
-            path = []
             break
 
         for item in explored_list:
