@@ -2,6 +2,7 @@
 # this file implements a star search snake ai
 # specifically it uses a square cost of that is equal to distance from snake body
 # if its adjacent to snake then cost is 1, then 2 etc
+# but costs of 2 of greater will be multiplied by 2
 # it uses manhattan distance for heuristic
 # the goal for this is that the snake will take paths that are closer to its body
 
@@ -22,7 +23,10 @@ def distance_from_snake(location):
         dist = hf.manhattan_distance(part, location)
         if dist < min_dist:
             min_dist = dist
-    return min_dist
+    if min_dist == 1:
+        return min_dist
+    else:
+        return min_dist * 2
 
 
 def cost_of_square(current_location):
@@ -86,14 +90,14 @@ def a_star_search():
         # choose a random position next
         # finding longest path takes much to long to calculate
         path = hf.take_move_biggest_reachable(grid, game_data["snake"][0])
-        # this should actually take a step in a direction such that it has the most reachable squares left
+    # this should actually take a step in a direction such that it has the most reachable squares left
     else:
         path = find_path_to_coin(grid, start_state, goal_state)
     game_data["path"] = path
     return 0
 
 
-def snake_ai_v6():
+def snake_ai_v7():
     '''
     path is created if path is currently empty
     new path is created every time a new coin is created
@@ -104,7 +108,7 @@ def snake_ai_v6():
         ret = a_star_search()
     # error occured in create_path_v0
     if ret == 1:
-        print("snake_ai_v6 error")
+        print("snake_ai_v7 error")
         return ret
     hf.update_snake_ai_v1()
     return ret

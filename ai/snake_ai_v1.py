@@ -10,27 +10,21 @@ def snake_ai_v1():
     '''
     head = game_data["snake"][0]
     coin = game_data["coin"]
-    print("head", head)
-    print("coin", coin)
     # if snake head is below coin on grid
     # move up on grid until in same row
     if head[1] > coin[1]:
-        print("up")
         game_data["snake_direction"] = "up"
     # if snake head is above coin on grid
     # move down on grid until in same row
     elif head[1] < coin[1]:
-        print("down")
         game_data["snake_direction"] = "down"
     # if snake head is right of coin on grid
     # move left on grid until in same row
     elif head[0] > coin[0]:
-        print("left")
         game_data["snake_direction"] = "left"
     # if snake head is left of coin on grid
     # move right on grid until in same row
     elif head[0] < coin[0]:
-        print("right")
         game_data["snake_direction"] = "right"
     # create new head of snake depending on current direction
     update_snake()

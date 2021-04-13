@@ -1,28 +1,6 @@
-import random
 from game_data import *
 from helper_functions import *
-
-
-def valid_move(next_move, open_squares):
-    '''
-    next_move is a location [col, row]
-    open_squares is a list [[col, row]] of open location on grid
-    checks if next_move is a valid location in open_squares
-    '''
-    if next_move in open_squares:
-        return True
-    else:
-        return False
-
-
-def get_open_squares():
-    '''
-    return a array of [x,y] coordinates
-    on the grid that are not snake or coin
-    '''
-    snake = game_data["snake"]
-    grid = game_data["grid"]
-    return [i for i in grid if i not in snake]
+from ai import snake_ai_helper_functions as hf
 
 
 def create_path_v0():
@@ -34,11 +12,8 @@ def create_path_v0():
     coin = game_data["coin"]
     rows = game_data["rows"]
     cols = game_data["cols"]
-    print("head", head)
-    print("coin", coin)
     # creat a list of all legal moves
-    open_squares = get_open_squares()
-    print(open_squares)
+    open_squares = hf.get_open_squares()
     current_head = head
     path = []
     # incase loop doesn't work kill after rows*cols loops
@@ -47,16 +22,10 @@ def create_path_v0():
     while True:
         # if count is not same length as path, then no moves were made
         if count != len(path):
-            print("create_path_v0 error")
-            print("valid move could not be made")
             return 1
         # kill incase looped more times than squares on board
         if count == rows * cols:
-            print("create_path_v0 error")
-            print("looped more times than squares on board")
             return 1
-        print()
-        print("path", path)
         # if first element of path is equal to coin
         # then we have found a full path from snake head to coin
         # can exit loop
@@ -67,30 +36,21 @@ def create_path_v0():
         # without hitting self or stepping out of bounds
         if path != []:
             current_head = path[0]
-        print("current_head", current_head)
         # current_head below coin on grid
         # try to move up
-        if current_head[1] > coin[1] and valid_move([current_head[0], current_head[1]-1], open_squares):
-            print("up")
-            print("next_move", [current_head[0], current_head[1]-1])
+        if current_head[1] > coin[1] and hf.valid_move([current_head[0], current_head[1]-1], open_squares):
             path.insert(0, [current_head[0], current_head[1]-1])
         # current_head above coin on grid
         # try to move down
-        elif current_head[1] < coin[1] and valid_move([current_head[0], current_head[1]+1], open_squares):
-            print("down")
-            print("next_move", [current_head[0], current_head[1]+1])
+        elif current_head[1] < coin[1] and hf.valid_move([current_head[0], current_head[1]+1], open_squares):
             path.insert(0, [current_head[0], current_head[1]+1])
          # current_head right of coin on grid
         # try to move left
-        elif current_head[0] > coin[0] and valid_move([current_head[0]-1, current_head[1]], open_squares):
-            print("left")
-            print("next_move", [current_head[0]-1, current_head[1]])
+        elif current_head[0] > coin[0] and hf.valid_move([current_head[0]-1, current_head[1]], open_squares):
             path.insert(0, [current_head[0]-1, current_head[1]])
          # current_head left of coin on grid
         # try to move right
-        elif current_head[0] < coin[0] and valid_move([current_head[0]+1, current_head[1]], open_squares):
-            print("right")
-            print("next_move", [current_head[0]+1, current_head[1]])
+        elif current_head[0] < coin[0] and hf.valid_move([current_head[0]+1, current_head[1]], open_squares):
             path.insert(0, [current_head[0]+1, current_head[1]])
         count += 1
     # the first element of path will be the coin

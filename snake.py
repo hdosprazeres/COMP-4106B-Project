@@ -10,10 +10,9 @@ from ai import snake_ai_v3
 from ai import snake_ai_v4
 from ai import snake_ai_v5
 from ai import snake_ai_v6
+from ai import snake_ai_v7
 from ai import snake_ai
 from SimpleGraphics import *
-# import tkinter as tk
-# from tkinter.constants import *
 
 
 def game_loop():
@@ -29,9 +28,13 @@ def game_loop():
     game_data["grid"] = create_grid()
     game_data["graph"] = snake_ai.make_graph()
 
-    # sleep_time = 0.05
-    # for automated testing only
     sleep_time = 0
+    # if game_data["ai"] == "human":
+    #     sleep_time = 0.15
+    # else:
+    #     sleep_time = 0.05
+    # for automated testing only
+    # sleep_time = 0
 
     resize(cols*blocksize, rows*blocksize)
     background("black")
@@ -55,20 +58,27 @@ def game_loop():
         game_data["snake_tail"] = game_data["snake"][-1]
 
         # human player
-        # keys = getHeldKeys()
-        # change_snake_direction(keys)
+        if game_data["ai"] == "human":
+            keys = getHeldKeys()
+            change_snake_direction(keys)
 
         # ai player
-        # error = snake_ai_v0()
-        # error = snake_ai_v1()
-        # error = snake_ai_v2()
-        # error = snake_ai_v3()
+        if game_data["ai"] == "snake_ai_v0":
+            error = snake_ai_v0.snake_ai_v0()
+        if game_data["ai"] == "snake_ai_v1":
+            error = snake_ai_v1.snake_ai_v1()
+        if game_data["ai"] == "snake_ai_v2":
+            error = snake_ai_v2.snake_ai_v2()
+        if game_data["ai"] == "snake_ai_v3":
+            error = snake_ai_v3.snake_ai_v3()
         if game_data["ai"] == "snake_ai_v4":
             error = snake_ai_v4.snake_ai_v4()
         if game_data["ai"] == "snake_ai_v5":
             error = snake_ai_v5.snake_ai_v5()
         if game_data["ai"] == "snake_ai_v6":
             error = snake_ai_v6.snake_ai_v6()
+        if game_data["ai"] == "snake_ai_v7":
+            error = snake_ai_v7.snake_ai_v7()
         # if error returned from snake_ai
         if error == 1:
             break
@@ -139,59 +149,5 @@ def draw_coin():
         rect(coin[0]*blocksize, coin[1]*blocksize, blocksize, blocksize)
 
 
-# def buttonPressed_heuristic1():
-#     print("Heuristic 1 pressed")
-#     clear()
-#     command_line_input()
-#     game_loop()
-
-# def buttonPressed_heuristic2():
-#     print("Heuristic 2 pressed")
-
-
-# def buttonPressed_heuristic3():
-#     print("Heuristic 3 pressed")
-
-
-# def draw_homescreen():
-#     setWindowTitle("Snake AI")
-#     resize(500, 500)
-#     background("black")
-#     setAutoUpdate(False)
-
-#     setFont("Helvetica", "32")
-#     setColor("yellow")
-#     text(250, 65, "Welcome to Snake AI!")
-
-#     master.configure(background='black')
-#     button_heuristic1 = tk.Button(
-#         text="Heuristic 1",
-#         width=20,
-#         height=5,
-#         bg="red",
-#         fg="yellow",
-#         command=buttonPressed_heuristic1)
-#     button_heuristic1.pack(pady=20)
-
-#     button_heuristic2 = tk.Button(
-#         text="Heuristic 2",
-#         width=20,
-#         height=5,
-#         bg="red",
-#         fg="yellow",
-#         command=buttonPressed_heuristic2)
-#     button_heuristic2.pack(pady=20)
-
-#     button_heuristic3 = tk.Button(
-#         text="Heuristic 3",
-#         width=20,
-#         height=5,
-#         bg="red",
-#         fg="yellow",
-#         command=buttonPressed_heuristic3)
-#     button_heuristic3.pack(pady=20)
-
-
-# draw_homescreen()
 command_line_input()
 game_loop()

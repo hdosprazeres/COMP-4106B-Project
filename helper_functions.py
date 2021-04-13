@@ -44,8 +44,6 @@ def change_snake_direction(keys):
     # change snakes direction if keystroke detected
     snake_direction = game_data["snake_direction"]
     # snake can move freely if just a head
-    # print("head", game_data["snake"][0])
-    # print("coin", game_data["coin"])
     if len(game_data["snake"]) == 1:
         if "w" in keys:
             game_data["snake_direction"] = "up"
@@ -140,51 +138,24 @@ def numberOfBarriers(neighbours, snake):
 
     return barriers
 
-# def command_line_input():
-#     '''
-#     takes comand line input to determine screen size
-#     see README
-#     '''
-#     size_min = 5
-#     size_max = 15
-
-#     if len(sys.argv) == 2:
-#         if int(sys.argv[1]) >= size_min and int(sys.argv[1]) <= size_max:
-#             game_data["rows"] = int(sys.argv[1])
-#             game_data["cols"] = int(sys.argv[1])
-#         else:
-#             print(f"rows and cols between {size_min}-{size_max}")
-#     if len(sys.argv) == 3:
-#         if int(sys.argv[1]) >= size_min and int(sys.argv[1]) <= size_max:
-#             game_data["cols"] = int(sys.argv[1])
-#         if int(sys.argv[2]) >= size_min and int(sys.argv[2]) <= size_max:
-#             game_data["rows"] = int(sys.argv[2])
-#         else:
-#             print(f"rows and cols between {size_max}-{size_min}")
-
 
 def command_line_input():
     '''
-    takes comand line input to determine screen size
-    also determines ai used
+    takes comand line input to determine ai
     see README
     '''
-    # size_min = 5
-    # size_max = 15
-    ais = ["snake_ai", "snake_ai_v4", "snake_ai_v5", "snake_ai_v6"]
+    # ais = ["human", "snake_ai", "snake_ai_v4",
+    #        "snake_ai_v5", "snake_ai_v6", "snake_ai_v7"]
+    ais = ["human", "snake_ai", "snake_ai_v0", "snake_ai_v1", "snake_ai_v2", "snake_ai_v3", "snake_ai_v4",
+           "snake_ai_v5", "snake_ai_v6", "snake_ai_v7"]
 
     if len(sys.argv) == 2:
-        if int(sys.argv[1]) >= 1 and int(sys.argv[1]) <= len(ais):
-            game_data["ai"] = ais[int(sys.argv[1])-1]
+        if int(sys.argv[1]) >= 0 and int(sys.argv[1]) <= len(ais):
+            game_data["ai"] = ais[int(sys.argv[1])]
             game_data["rows"] = 10
             game_data["cols"] = 10
-
-    # if len(sys.argv) == 3:
-    #     if int(sys.argv[1]) >= 1 and int(sys.argv[1]) <= len(ais):
-    #         game_data["ai"] = ais[int(sys.argv[1])-1]
-    #     if int(sys.argv[2]) >= size_min and int(sys.argv[2]) <= size_max:
-    #         game_data["rows"] = int(sys.argv[2])
-    #         game_data["cols"] = int(sys.argv[2])
+        else:
+            print("invalid input")
 
 
 def save_score(score):
