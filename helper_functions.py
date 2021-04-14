@@ -144,16 +144,17 @@ def command_line_input():
     takes comand line input to determine ai
     see README
     '''
-    # ais = ["human", "snake_ai", "snake_ai_v4",
-    #        "snake_ai_v5", "snake_ai_v6", "snake_ai_v7"]
-    ais = ["human", "snake_ai", "snake_ai_v0", "snake_ai_v1", "snake_ai_v2", "snake_ai_v3", "snake_ai_v4",
+    ais = ["snake_ai", "snake_ai_v4",
            "snake_ai_v5", "snake_ai_v6", "snake_ai_v7"]
+    # ais = ["human", "snake_ai", "snake_ai_v0", "snake_ai_v1", "snake_ai_v2", "snake_ai_v3", "snake_ai_v4",
+    #        "snake_ai_v5", "snake_ai_v6", "snake_ai_v7"]
 
     if len(sys.argv) == 2:
         if int(sys.argv[1]) >= 0 and int(sys.argv[1]) <= len(ais):
             game_data["ai"] = ais[int(sys.argv[1])]
             game_data["rows"] = 10
             game_data["cols"] = 10
+            print("ai:", ais[int(sys.argv[1])])
         else:
             print("invalid input")
 

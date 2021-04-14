@@ -8,8 +8,8 @@ def run_stats(file_path, name):
     # print(data)
     fig, ax = plt.subplots()
     ax.hist(data)
-    ax.set_xlabel('Score')
-    ax.set_ylabel('Times achieved score')
+    ax.set_xlabel("Score")
+    ax.set_ylabel("Times achieved score")
     ax.set_title(name)
     plt.show()
 

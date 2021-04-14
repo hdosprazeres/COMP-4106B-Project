@@ -28,13 +28,9 @@ def game_loop():
     game_data["grid"] = create_grid()
     game_data["graph"] = snake_ai.make_graph()
 
-    sleep_time = 0
-    # if game_data["ai"] == "human":
-    #     sleep_time = 0.15
-    # else:
-    #     sleep_time = 0.05
+    # sleep_time = 0.05
     # for automated testing only
-    # sleep_time = 0
+    sleep_time = 0
 
     resize(cols*blocksize, rows*blocksize)
     background("black")
